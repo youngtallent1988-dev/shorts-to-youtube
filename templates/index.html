@@ -1,0 +1,40 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Shorts to YouTube Converter</title>
+  <style>
+    body { font-family: Arial; background:#f5f5f5; padding:40px; }
+    .card { background:white; padding:20px; max-width:480px; margin:auto; border-radius:10px; }
+    button { background:#ff0000; color:white; border:none; padding:10px; width:100%; }
+    input { width:100%; margin:10px 0; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Shorts → YouTube (16:9)</h2>
+    <form method="post" action="/convert" enctype="multipart/form-data">
+      <input type="file" name="video" accept="video/*" required>
+      <button type="submit">Convert & Download</button>
+      <div style="margin: 12px 0; padding: 12px; border: 1px solid #ddd; border-radius: 10px;">
+  <div style="font-weight: 600; margin-bottom: 8px;">Choose format:</div>
+
+  <label style="display:block; margin:6px 0;">
+    <input type="radio" name="mode" value="blur" checked>
+    Blur background (recommended)
+  </label>
+
+  <label style="display:block; margin:6px 0;">
+    <input type="radio" name="mode" value="fitzoom">
+    Fit + slight zoom (minimal crop)
+  </label>
+
+  <label style="display:block; margin:6px 0;">
+    <input type="radio" name="mode" value="crop">
+    Crop to fill (no blur, full 16:9)
+  </label>
+</div>
+    </form>
+  </div>
+</body>
+</html>
