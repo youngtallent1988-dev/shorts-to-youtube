@@ -21,9 +21,11 @@ def run_ffmpeg(cmd):
         raise RuntimeError(p.stderr)
 
 
-@app.route("/")
-def index():
-    return render_template("index.html")
+from flask import Response
+
+@app.route("/favicon.ico")
+def favicon():
+    return Response(status=204)  # No Content
 
 
 @app.route("/convert", methods=["POST"])
