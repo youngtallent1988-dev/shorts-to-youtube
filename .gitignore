@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual env
+.venv/
+
+# App folders (do NOT commit user videos)
+uploads/
+outputs/
+
+# macOS
+.DS_Store
