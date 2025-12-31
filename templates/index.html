@@ -108,25 +108,17 @@
   </style>
 </head>
 <script>
-  // Track Convert button
   const convertBtn = document.getElementById("convert-btn");
   if (convertBtn) {
     convertBtn.addEventListener("click", () => {
-      gtag("event", "convert_click", {
-        event_category: "engagement",
-        event_label: "Convert & Download"
-      });
+      gtag("event", "convert_click");
     });
   }
 
-  // Track PayPal button
   const donateBtn = document.getElementById("paypal-btn");
   if (donateBtn) {
     donateBtn.addEventListener("click", () => {
-      gtag("event", "donate_click", {
-        event_category: "monetization",
-        event_label: "PayPal Support"
-      });
+      gtag("event", "donate_click");
     });
   }
 </script>
@@ -156,7 +148,7 @@
         </label>
       </div>
 
-<button id="convert-btn" type="submit">
+<button id="convert-btn" type="submit" class="convert-btn">
   Convert & Download
 </button>
       <hr />
@@ -166,13 +158,12 @@
           ❤️ If this tool saved you time, you can support it:
         </p>
 
-  <a id="paypal-btn"
+ <a id="paypal-btn"
    href="https://paypal.me/shortstoyoutube"
    target="_blank"
    rel="noopener">
-  💛 Support via PayPal
-</a>
-      
+   💛 Support via PayPal
+</a> 
         <div class="note">
           One-time support • Secure PayPal checkout
         </div>
