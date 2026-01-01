@@ -311,8 +311,8 @@
 
     <div class="grid">
       <div class="hero">
-        <h1>Convert Shorts to YouTube (16:9)</h1>
-        <p>
+        <h1 id="hero-title">Convert Shorts to YouTube (16:9)</h1>
+        <p id="hero-desc">
           Upload a vertical Short and export a clean 16:9 version. Choose blur background,
           minimal crop, or full crop-to-fill. Fast, simple, and mobile-friendly.
         </p>
@@ -327,7 +327,23 @@
         <form method="post" action="/convert" enctype="multipart/form-data">
           <input class="file" type="file" name="video" accept="video/*" required />
 
+          <!-- ✅ NEW: Conversion type (direction) -->
           <div class="box">
+            <div class="box-title">Conversion type</div>
+
+            <label>
+              <input type="radio" name="direction" value="shorts_to_youtube" checked />
+              <span><b>Shorts → YouTube</b> (9:16 → 16:9)</span>
+            </label>
+
+            <label>
+              <input type="radio" name="direction" value="youtube_to_shorts" />
+              <span><b>YouTube → Shorts</b> (16:9 → 9:16)</span>
+            </label>
+          </div>
+
+          <!-- ✅ Existing options (Shorts → YouTube) -->
+          <div id="box-sty" class="box">
             <div class="box-title">Choose format</div>
 
             <label>
@@ -343,6 +359,26 @@
             <label>
               <input type="radio" name="mode" value="crop" />
               <span><b>Crop to fill</b> (no blur, full 16:9)</span>
+            </label>
+          </div>
+
+          <!-- ✅ NEW: Options (YouTube → Shorts) -->
+          <div id="box-yts" class="box" style="display:none;">
+            <div class="box-title">Choose Shorts format</div>
+
+            <label>
+              <input type="radio" name="mode" value="crop" />
+              <span><b>Center crop</b> (recommended for Shorts)</span>
+            </label>
+
+            <label>
+              <input type="radio" name="mode" value="blur" />
+              <span><b>Blur background</b> (no content cut off)</span>
+            </label>
+
+            <label>
+              <input type="radio" name="mode" value="fitzoom" checked />
+              <span><b>Fit + slight zoom</b> (minimal crop)</span>
             </label>
           </div>
 
@@ -369,7 +405,7 @@
 
         <div class="tips">
           <h3>Tips</h3>
-          <ul>
+          <ul id="tips-list">
             <li><b>Blur</b> keeps the whole video visible and looks great on YouTube.</li>
             <li><b>Fit + zoom</b> is subtle and avoids heavy cropping.</li>
             <li><b>Crop</b> fills the frame but may cut edges of the original.</li>
@@ -398,6 +434,64 @@
     if (donateBtn && typeof gtag === "function") {
       donateBtn.addEventListener("click", () => gtag("event", "donate_click"));
     }
+
+    // ✅ NEW: Toggle UI based on conversion direction (no layout changes)
+    const dirRadios = document.querySelectorAll('input[name="direction"]');
+    const boxSTY = document.getElementById("box-sty"); // Shorts → YouTube box
+    const boxYTS = document.getElementById("box-yts"); // YouTube → Shorts box
+    const heroTitle = document.getElementById("hero-title");
+    const heroDesc = document.getElementById("hero-desc");
+    const tipsList = document.getElementById("tips-list");
+
+    function setModeDefaultForVisibleBox(visibleBoxId) {
+      // Ensure at least one "mode" radio is checked within the visible box
+      const visibleBox = document.getElementById(visibleBoxId);
+      const radios = visibleBox.querySelectorAll('input[type="radio"][name="mode"]');
+      const anyChecked = Array.from(radios).some(r => r.checked);
+      if (!anyChecked && radios.length) radios[0].checked = true;
+    }
+
+    function updateUI() {
+      const selected = document.querySelector('input[name="direction"]:checked')?.value;
+
+      if (selected === "youtube_to_shorts") {
+        boxSTY.style.display = "none";
+        boxYTS.style.display = "block";
+        setModeDefaultForVisibleBox("box-yts");
+
+        heroTitle.textContent = "Convert YouTube to Shorts (9:16)";
+        heroDesc.textContent =
+          "Upload a 16:9 YouTube video and export a vertical 9:16 Shorts version. Choose center crop, blur background, or minimal zoom. Great for TikTok, Reels, and Shorts.";
+
+        tipsList.innerHTML = `
+          <li><b>Center crop</b> is the standard Shorts look (cuts left/right).</li>
+          <li><b>Blur</b> keeps the full video visible with a clean background.</li>
+          <li><b>Fit + zoom</b> fills the frame with minimal cropping.</li>
+        `;
+      } else {
+        boxSTY.style.display = "block";
+        boxYTS.style.display = "none";
+        setModeDefaultForVisibleBox("box-sty");
+
+        heroTitle.textContent = "Convert Shorts to YouTube (16:9)";
+        heroDesc.textContent =
+          "Upload a vertical Short and export a clean 16:9 version. Choose blur background, minimal crop, or full crop-to-fill. Fast, simple, and mobile-friendly.";
+
+        tipsList.innerHTML = `
+          <li><b>Blur</b> keeps the whole video visible and looks great on YouTube.</li>
+          <li><b>Fit + zoom</b> is subtle and avoids heavy cropping.</li>
+          <li><b>Crop</b> fills the frame but may cut edges of the original.</li>
+        `;
+      }
+
+      if (typeof gtag === "function") {
+        gtag("event", "direction_change", { direction: selected || "shorts_to_youtube" });
+      }
+    }
+
+    dirRadios.forEach(r => r.addEventListener("change", updateUI));
+    updateUI(); // init
   </script>
 </body>
 </html>
+
