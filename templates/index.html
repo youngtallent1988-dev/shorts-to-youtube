@@ -5,9 +5,9 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-NVL9FN7HE3"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-NVL9FN7HE3');
+    function gtag(){ dataLayer.push(arguments); }
+    gtag("js", new Date());
+    gtag("config", "G-NVL9FN7HE3");
   </script>
 
   <meta charset="UTF-8" />
@@ -15,468 +15,240 @@
   <title>Shorts to YouTube Converter</title>
 
   <style>
-    :root{
-      --bg:#0b0f19;
-      --panel:#0f172a;
-      --card:#ffffff;
-      --muted:#6b7280;
-      --text:#0f172a;
-      --brand:#ff0000;
-      --brand2:#ffc439;
-      --ring: rgba(255,255,255,0.08);
-      --shadow: 0 18px 60px rgba(0,0,0,0.35);
-      --shadow2: 0 12px 30px rgba(0,0,0,0.08);
-      --radius: 18px;
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      padding: 28px;
+      margin: 0;
     }
 
-    * { box-sizing: border-box; }
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background:
-        radial-gradient(1200px 800px at 20% -10%, rgba(99,102,241,0.35), transparent 55%),
-        radial-gradient(900px 700px at 100% 0%, rgba(236,72,153,0.25), transparent 55%),
-        radial-gradient(900px 700px at 40% 110%, rgba(34,197,94,0.15), transparent 55%),
-        var(--bg);
-      color: #fff;
-      padding: 36px 14px 60px;
-    }
-
-    .wrap{
-      max-width: 980px;
+    .container {
+      max-width: 700px;
       margin: 0 auto;
     }
 
-    /* ===== HERO ===== */
-    .hero{
-      border: 1px solid var(--ring);
-      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
-      border-radius: 22px;
-      padding: 26px 22px;
-      box-shadow: var(--shadow);
-      position: relative;
-      overflow:hidden;
-    }
-    .hero::after{
-      content:"";
-      position:absolute;
-      inset:-60px -120px auto auto;
-      width: 360px;
-      height: 360px;
-      background: radial-gradient(circle at 30% 30%, rgba(255,0,0,0.35), transparent 60%),
-                  radial-gradient(circle at 70% 70%, rgba(255,196,57,0.22), transparent 60%);
-      filter: blur(6px);
-      opacity: 0.9;
-      transform: rotate(10deg);
-      pointer-events:none;
-    }
-
-    .hero-top{
-      display:flex;
-      justify-content: space-between;
-      gap: 14px;
-      align-items: center;
-      flex-wrap: wrap;
-      position: relative;
-      z-index: 2;
-    }
-
-    .brandline{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      font-weight: 700;
-      letter-spacing: 0.2px;
-      color: rgba(255,255,255,0.92);
-      font-size: 14px;
-    }
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(255,255,255,0.06);
-      padding: 8px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      color: rgba(255,255,255,0.9);
-    }
-
-    h1{
-      margin: 14px 0 8px;
-      font-size: clamp(26px, 3.2vw, 40px);
-      line-height: 1.1;
-      letter-spacing: -0.6px;
-    }
-    .sub{
-      margin: 0;
-      color: rgba(255,255,255,0.78);
-      max-width: 720px;
-      line-height: 1.5;
-      font-size: 14.5px;
-    }
-
-    .hero-actions{
-      margin-top: 16px;
-      display:flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      position: relative;
-      z-index: 2;
-    }
-    .ghost{
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.16);
-      background: rgba(255,255,255,0.04);
-      color: rgba(255,255,255,0.92);
-      text-decoration:none;
-      font-weight: 600;
-      font-size: 13px;
-    }
-    .ghost:hover{ background: rgba(255,255,255,0.08); }
-
-    /* ===== CREATOR BANNER ===== */
-    .creator-banner{
-      margin-top: 14px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
-      border-radius: 22px;
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-
-    .creator-inner{
-      display:grid;
-      grid-template-columns: 1.15fr 1.35fr;
-      gap: 0;
-      min-height: 160px;
-    }
-
-    .creator-img{
+    /* HERO BANNER */
+    .hero {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display:block;
-      background: rgba(255,255,255,0.06);
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+      margin-bottom: 22px;
+      background: #fff;
     }
 
-    .creator-text{
-      padding: 18px 18px 18px 18px;
-      display:flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 8px;
+    .hero img {
+      width: 100%;
+      height: auto;
+      display: block;
     }
 
-    .creator-kicker{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      font-size: 12px;
-      color: rgba(255,255,255,0.75);
-    }
-
-    .creator-text h3{
-      margin: 0;
-      font-size: 18px;
-      letter-spacing: -0.2px;
-    }
-
-    .creator-text p{
-      margin: 0;
-      color: rgba(255,255,255,0.78);
-      line-height: 1.45;
-      font-size: 13.5px;
-      max-width: 520px;
-    }
-
-    .creator-links{
-      margin-top: 10px;
-      display:flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items:center;
-    }
-
-    .yt-btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap: 10px;
-      padding: 11px 14px;
-      border-radius: 12px;
-      text-decoration:none;
-      font-weight: 800;
-      background: #ff0000;
+    .hero-text {
+      position: absolute;
+      left: 14px;
+      bottom: 14px;
+      background: rgba(0,0,0,0.55);
       color: #fff;
-      border: 1px solid rgba(255,255,255,0.12);
-      box-shadow: 0 12px 30px rgba(255,0,0,0.25);
-      font-size: 13px;
-    }
-    .yt-btn:hover{ opacity: 0.92; }
-
-    .site-btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap: 10px;
-      padding: 11px 14px;
+      padding: 12px 14px;
       border-radius: 12px;
-      text-decoration:none;
-      font-weight: 800;
-      background: rgba(255,255,255,0.06);
-      color: rgba(255,255,255,0.92);
-      border: 1px solid rgba(255,255,255,0.14);
+      backdrop-filter: blur(4px);
+    }
+
+    .hero-text h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: 0.2px;
+    }
+
+    .hero-text p {
+      margin: 6px 0 0;
       font-size: 13px;
-    }
-    .site-btn:hover{ background: rgba(255,255,255,0.10); }
-
-    /* ===== MAIN CARD ===== */
-    .grid{
-      margin-top: 18px;
-      display:grid;
-      grid-template-columns: 1fr;
-      gap: 18px;
-      align-items:start;
+      opacity: 0.92;
     }
 
-    .card{
-      background: var(--card);
+    /* CARD */
+    .card {
+      background: white;
       padding: 24px;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow2);
-      color: var(--text);
-      border: 1px solid rgba(15,23,42,0.08);
-    }
-
-    .card h2{
-      margin: 0 0 14px;
-      text-align:center;
-      font-size: 22px;
-      letter-spacing: -0.3px;
-    }
-
-    input[type="file"]{
-      width: 100%;
-      margin: 10px 0 16px;
-    }
-
-    .box{
-      margin: 12px 0 18px;
-      padding: 14px;
-      border: 1px solid #e5e7eb;
       border-radius: 14px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    }
+
+    h2 {
+      margin: 0 0 14px 0;
+      text-align: center;
+    }
+
+    input[type="file"] {
+      width: 100%;
+      margin: 12px 0 18px 0;
+    }
+
+    .box {
+      margin: 16px 0;
+      padding: 14px;
+      border: 1px solid #ddd;
+      border-radius: 12px;
       background: #fafafa;
     }
-    .box-title{
-      font-weight: 800;
+
+    .box-title {
+      font-weight: 700;
       margin-bottom: 10px;
-      font-size: 14px;
     }
-    label{
-      display:block;
+
+    label {
+      display: block;
       margin: 8px 0;
-      cursor:pointer;
-      color: #111827;
-      font-size: 14px;
+      cursor: pointer;
     }
 
-    .convert-btn{
-      background: var(--brand);
-      color:#fff;
-      border:none;
+    /* CONVERT BUTTON */
+    .convert-btn {
+      background: #ff0000;
+      color: white;
+      border: none;
       padding: 14px;
-      width:100%;
-      border-radius: 14px;
+      width: 100%;
+      border-radius: 12px;
       font-size: 16px;
-      font-weight: 900;
-      cursor:pointer;
-      box-shadow: 0 14px 35px rgba(255,0,0,0.22);
+      font-weight: 800;
+      cursor: pointer;
     }
-    .convert-btn:hover{ opacity: 0.93; }
 
-    hr{
-      margin: 22px 0;
+    .convert-btn:hover {
+      opacity: 0.92;
+    }
+
+    hr {
+      margin: 26px 0;
       border: none;
       border-top: 1px solid #eee;
     }
 
-    .donate{
-      text-align:center;
+    /* SUPPORT */
+    .donate {
+      text-align: center;
     }
 
-    .paypal-btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap: 10px;
-      padding: 12px 18px;
-      background: var(--brand2);
-      color:#111;
+    .paypal-btn {
+      display: inline-block;
+      padding: 14px 18px;
+      background: #ffc439;
+      color: #111;
       font-weight: 900;
-      border-radius: 14px;
-      text-decoration:none;
-      box-shadow: 0 12px 24px rgba(0,0,0,0.18);
-      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 12px;
+      text-decoration: none;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
     }
-    .paypal-btn:hover{ opacity: 0.92; }
 
-    .note{
+    .paypal-btn:hover {
+      opacity: 0.92;
+    }
+
+    .note {
       font-size: 13px;
-      color: #6b7280;
+      color: #666;
       margin-top: 10px;
     }
 
-    /* ===== FOOTER ===== */
-    .footer{
-      margin-top: 16px;
-      text-align:center;
-      color: rgba(255,255,255,0.62);
-      font-size: 12px;
-    }
-
-    /* Responsive */
-    @media (max-width: 820px){
-      .creator-inner{ grid-template-columns: 1fr; }
-      .creator-img{ height: 180px; }
-      body{ padding: 22px 12px 44px; }
+    /* MOBILE */
+    @media (max-width: 600px) {
+      body { padding: 18px; }
+      .hero-text h1 { font-size: 16px; }
+      .hero-text p { font-size: 12px; }
+      .card { padding: 18px; }
     }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
+  <div class="container">
 
-    <!-- HERO -->
-    <section class="hero">
-      <div class="hero-top">
-        <div class="brandline">
-          <span class="pill">⚡ Free tool</span>
-          <span class="pill">✅ 16:9 outputs</span>
-          <span class="pill">🎬 Blur / FitZoom / Crop</span>
+    <!-- HERO BANNER -->
+    <div class="hero">
+      <img src="{{ url_for('static', filename='creator-banner.jpg') }}" alt="Shorts to YouTube Creator Banner">
+      <div class="hero-text">
+        <h1>Shorts → YouTube Converter</h1>
+        <p>Fast • Simple • Creator-friendly</p>
+      </div>
+    </div>
+
+    <!-- MAIN CARD -->
+    <div class="card">
+      <h2>Shorts → YouTube (16:9)</h2>
+
+      <form method="post" action="/convert" enctype="multipart/form-data">
+        <input type="file" name="video" accept="video/*" required />
+
+        <div class="box">
+          <div class="box-title">Choose format:</div>
+
+          <label>
+            <input type="radio" name="mode" value="blur" checked />
+            Blur background (recommended)
+          </label>
+
+          <label>
+            <input type="radio" name="mode" value="fitzoom" />
+            Fit + slight zoom (minimal crop)
+          </label>
+
+          <label>
+            <input type="radio" name="mode" value="crop" />
+            Crop to fill (no blur, full 16:9)
+          </label>
         </div>
-      </div>
 
-      <h1>Shorts → YouTube Converter</h1>
-      <p class="sub">
-        Convert YouTube Shorts (9:16) into YouTube-ready 16:9 videos.
-        Choose blur background, fit + slight zoom, or full crop — then download instantly.
-      </p>
+        <button id="convert-btn" type="submit" class="convert-btn">
+          Convert & Download
+        </button>
 
-      <div class="hero-actions">
-        <!-- Put your real YouTube link here -->
-        <a class="ghost" href="https://www.youtube.com/@SailorSailorAdventures" target="_blank" rel="noopener">▶ Visit my YouTube</a>
+        <hr />
 
-        <!-- Optional: your brand / linktree / website -->
-        <a class="ghost" href="https://shortstoyoutube.com" target="_blank" rel="noopener">🌐 shortstoyoutube.com</a>
-      </div>
-    </section>
-
-    <!-- CREATOR BANNER (NEW) -->
-    <section class="creator-banner">
-      <div class="creator-inner">
-        <!-- Put your banner image in: /static/creator-banner.jpg -->
-        <img class="creator-img" src="/static/creator-banner.jpg" alt="Creator banner" />
-
-        <div class="creator-text">
-          <div class="creator-kicker">✨ Creator • Tools for creators</div>
-          <h3>Made by Royain — Smiley Rhymes</h3>
-          <p>
-            I build simple tools to help creators save time and post faster.
-            If you like this converter, check out my YouTube channel for AI video tips & kids content.
+        <div class="donate">
+          <p style="margin-bottom: 12px;">
+            ❤️ If this tool saved you time, you can support it:
           </p>
 
-          <div class="creator-links">
-            <!-- Put your real channel link here -->
-            <a class="yt-btn" href="https://www.youtube.com/@SailorSailorAdventures" target="_blank" rel="noopener">▶ Subscribe on YouTube</a>
-            <!-- Optional extra link -->
-            <a class="site-btn" href="https://shortstoyoutube.com" target="_blank" rel="noopener">View Website</a>
-          </div>
+          <a
+            id="paypal-btn"
+            class="paypal-btn"
+            href="https://paypal.me/shortstoyoutube"
+            target="_blank"
+            rel="noopener"
+          >
+            💛 Support via PayPal
+          </a>
+
+          <div class="note">One-time support • Secure PayPal checkout</div>
         </div>
-      </div>
-    </section>
-
-    <!-- MAIN TOOL -->
-    <div class="grid">
-      <div class="card">
-        <h2>Convert a Short (9:16) → YouTube (16:9)</h2>
-
-        <form method="post" action="/convert" enctype="multipart/form-data">
-          <input type="file" name="video" accept="video/*" required />
-
-          <div class="box">
-            <div class="box-title">Choose format:</div>
-
-            <label>
-              <input type="radio" name="mode" value="blur" checked />
-              Blur background (recommended)
-            </label>
-
-            <label>
-              <input type="radio" name="mode" value="fitzoom" />
-              Fit + slight zoom (minimal crop)
-            </label>
-
-            <label>
-              <input type="radio" name="mode" value="crop" />
-              Crop to fill (no blur, full 16:9)
-            </label>
-          </div>
-
-          <button id="convert-btn" type="submit" class="convert-btn">
-            Convert & Download
-          </button>
-
-          <hr />
-
-          <div class="donate">
-            <p style="margin:0 0 12px; font-weight:700;">
-              ❤️ If this tool saved you time, you can support it:
-            </p>
-
-            <a
-              id="paypal-btn"
-              class="paypal-btn"
-              href="https://paypal.me/shortstoyoutube"
-              target="_blank"
-              rel="noopener"
-            >
-              💛 Support via PayPal
-            </a>
-
-            <div class="note">
-              One-time support • Secure PayPal checkout
-            </div>
-          </div>
-        </form>
-      </div>
+      </form>
     </div>
 
-    <div class="footer">
-      © <span id="year"></span> Shorts to YouTube • Built by Royain
-    </div>
   </div>
 
+  <!-- Click Tracking (must be AFTER buttons exist) -->
   <script>
-    // year
-    document.getElementById("year").textContent = new Date().getFullYear();
-
-    // GA event tracking (works because this runs AFTER the elements exist)
+    // Track Convert click
     const convertBtn = document.getElementById("convert-btn");
     if (convertBtn) {
       convertBtn.addEventListener("click", () => {
-        try { gtag("event", "convert_click"); } catch(e) {}
+        if (typeof gtag === "function") {
+          gtag("event", "convert_click", { event_category: "engagement" });
+        }
       });
     }
 
+    // Track PayPal click
     const donateBtn = document.getElementById("paypal-btn");
     if (donateBtn) {
       donateBtn.addEventListener("click", () => {
-        try { gtag("event", "donate_click"); } catch(e) {}
+        if (typeof gtag === "function") {
+          gtag("event", "donate_click", { event_category: "engagement" });
+        }
       });
     }
   </script>
