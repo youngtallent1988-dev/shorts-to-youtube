@@ -6,8 +6,8 @@
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag("js", new Date());
-    gtag("config", "G-NVL9FN7HE3");
+    gtag('js', new Date());
+    gtag('config', 'G-NVL9FN7HE3');
   </script>
 
   <meta charset="UTF-8" />
@@ -16,409 +16,388 @@
 
   <style>
     :root{
-      --bg-dark: #1c1f26;
-      --bg-dark-2:#232733;
-      --text: #111;
-      --muted:#6b7280;
-      --card:#ffffff;
-      --border:#e5e7eb;
+      --bg: #0b1220;
+      --bg2:#0f1a2e;
+      --card:#0f1b31;
+      --card2:#0c1528;
+      --text:#eaf0ff;
+      --muted:#a8b3d6;
+      --line: rgba(255,255,255,0.12);
       --accent:#ff0000;
-      --shadow: 0 14px 40px rgba(0,0,0,0.16);
-      --shadow-soft: 0 12px 28px rgba(0,0,0,0.10);
+      --accent2:#ffc439;
+      --shadow: 0 18px 60px rgba(0,0,0,.35);
     }
 
-    *{ box-sizing:border-box; }
+    *{box-sizing:border-box}
     body{
       margin:0;
-      font-family: Arial, sans-serif;
-      background:#f6f7fb;
-      color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 600px at 20% 0%, rgba(109, 57, 255, 0.20), transparent 60%),
+        radial-gradient(900px 600px at 90% 10%, rgba(0, 255, 200, 0.10), transparent 55%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      min-height:100vh;
+      padding: 42px 16px 80px;
     }
 
-    /* ===== Top Nav ===== */
-    .nav{
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      background: rgba(28,31,38,0.92);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-    .nav-inner{
-      max-width: 1100px;
+    .wrap{
+      max-width: 980px;
       margin: 0 auto;
-      padding: 12px 18px;
+    }
+
+    /* Top bar (no personal name, no banner) */
+    .topbar{
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap: 12px;
+      gap:12px;
+      margin-bottom: 26px;
     }
     .brand{
       display:flex;
       align-items:center;
       gap:10px;
-      color:#fff;
+      font-weight:800;
+      letter-spacing:.2px;
+      text-decoration:none;
+      color:var(--text);
+    }
+    .brand-badge{
+      width:34px; height:34px;
+      border-radius:10px;
+      background: linear-gradient(135deg, rgba(255,0,0,.9), rgba(255,196,57,.9));
+      box-shadow: 0 10px 25px rgba(255,0,0,.12);
+      display:flex; align-items:center; justify-content:center;
       font-weight:900;
-      letter-spacing:0.2px;
-      text-decoration:none;
+      color:#111;
     }
-    .dot{
-      width:10px;height:10px;border-radius:999px;
-      background:#22c55e;
-      box-shadow:0 0 0 3px rgba(34,197,94,0.18);
-    }
-    .nav-links{
-      display:flex;
-      align-items:center;
-      gap: 10px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-    }
-    .nav-links a{
-      color: rgba(255,255,255,0.86);
-      text-decoration:none;
-      font-weight:700;
-      font-size: 13px;
-      padding: 8px 10px;
-      border-radius: 10px;
-    }
-    .nav-links a:hover{
-      background: rgba(255,255,255,0.08);
-    }
-    .nav-cta{
-      background:#ffc439;
-      color:#111 !important;
-      font-weight:900 !important;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+    .brand small{
+      display:block;
+      color: var(--muted);
+      font-weight:600;
+      font-size:12px;
+      margin-top:2px;
+      letter-spacing:0;
     }
 
-    /* ===== Hero ===== */
-    .hero{
-      background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-dark-2) 100%);
-      color:#fff;
-      padding: 44px 18px 60px;
-    }
-    .hero-inner{
-      max-width:1100px;
-      margin:0 auto;
-      display:grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 22px;
+    .pill{
+      display:inline-flex;
       align-items:center;
+      gap:8px;
+      padding:10px 12px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,0.05);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 13px;
+      text-decoration:none;
+      backdrop-filter: blur(10px);
     }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 18px;
+      align-items:start;
+    }
+    @media (max-width: 900px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+
+    .hero{
+      padding: 22px 20px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      box-shadow: var(--shadow);
+    }
+
     .hero h1{
-      margin:0;
-      font-size: clamp(34px, 4.6vw, 52px);
-      line-height:1.05;
-      letter-spacing: -0.6px;
+      margin:0 0 10px 0;
+      font-size: 30px;
+      line-height: 1.1;
+      letter-spacing: -.4px;
     }
     .hero p{
-      margin: 14px 0 0 0;
-      color: rgba(255,255,255,0.75);
-      font-size: 15px;
-      line-height: 1.6;
-      max-width: 52ch;
-    }
-
-    /* Banner card on hero (right side) */
-    .banner-card{
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 18px;
-      overflow:hidden;
-      box-shadow: 0 18px 55px rgba(0,0,0,0.30);
-    }
-    .banner-card img{
-      width:100%;
-      height: 170px;
-      object-fit: cover;
-      display:block;
-    }
-    .banner-meta{
-      padding: 14px 14px 16px;
-    }
-    .banner-meta .title{
-      font-weight: 900;
       margin:0;
-      color:#fff;
-      font-size: 15px;
-    }
-    .banner-meta .sub{
-      margin: 6px 0 0 0;
-      color: rgba(255,255,255,0.72);
-      font-size: 13px;
-      line-height:1.45;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+      max-width: 55ch;
     }
 
-    /* ===== Main ===== */
-    .main{
-      padding: 26px 18px 70px;
-    }
-    .container{
-      max-width:1100px;
-      margin:0 auto;
-    }
-
-    /* Tool card */
-    .tool-wrap{
-      margin-top: -42px; /* pulls card into hero area like pro sites */
-      display:flex;
-      justify-content:center;
-    }
     .card{
-      width: 100%;
-      max-width: 520px;
-      background: var(--card);
-      border-radius: 16px;
-      padding: 24px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
       box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-    }
-    .card h2{
-      margin: 0 0 14px 0;
-      text-align:center;
-      font-size: 22px;
-      letter-spacing: -0.2px;
+      overflow:hidden;
     }
 
-    input[type="file"]{
-      width: 100%;
-      margin: 8px 0 16px 0;
+    .card-head{
+      padding: 18px 18px 0 18px;
+    }
+    .card-head h2{
+      margin:0;
+      font-size: 18px;
+      letter-spacing: -.2px;
+    }
+    .card-head .sub{
+      margin-top:6px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height:1.5;
+    }
+
+    form{
+      padding: 14px 18px 18px 18px;
+    }
+
+    .file{
+      width:100%;
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px dashed rgba(255,255,255,0.22);
+      background: rgba(0,0,0,0.18);
+      color: var(--text);
+      cursor:pointer;
     }
 
     .box{
-      margin: 12px 0 16px;
+      margin-top: 14px;
       padding: 14px;
-      border: 1px solid var(--border);
       border-radius: 14px;
-      background: #fafafa;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.15);
     }
     .box-title{
-      font-weight: 900;
+      font-weight: 800;
       margin-bottom: 10px;
+      font-size: 13px;
+      color: var(--text);
     }
     label{
-      display:block;
-      margin: 8px 0;
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      padding: 10px 10px;
+      border-radius: 12px;
+      border: 1px solid transparent;
       cursor:pointer;
-      color:#111;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    label:hover{
+      border-color: rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+    }
+    input[type="radio"]{
+      margin-top: 3px;
+      accent-color: var(--accent);
     }
 
-    .convert-btn{
-      background: var(--accent);
-      color:#fff;
-      border:none;
+    .actions{
+      margin-top: 14px;
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+    }
+
+    .btn{
       width:100%;
-      padding: 14px;
+      border:none;
       border-radius: 14px;
+      padding: 14px 16px;
       font-size: 16px;
       font-weight: 900;
       cursor:pointer;
+      transition: transform .06s ease, opacity .15s ease;
     }
-    .convert-btn:hover{ opacity:0.92; }
+    .btn:active{ transform: translateY(1px); }
+    .btn-primary{
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 14px 30px rgba(255,0,0,.18);
+    }
+    .btn-primary:hover{ opacity:.92; }
 
-    hr{
-      margin: 22px 0;
-      border:none;
-      border-top: 1px solid #eee;
+    .divider{
+      margin: 18px 0;
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.10);
     }
 
     .donate{
       text-align:center;
+      padding-top: 4px;
+    }
+    .donate p{
+      margin:0 0 12px 0;
+      color: var(--muted);
+      font-size: 13px;
     }
     .paypal-btn{
-      display:inline-block;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
       padding: 12px 18px;
-      background:#ffc439;
+      border-radius: 14px;
+      background: var(--accent2);
       color:#111;
       font-weight: 900;
-      border-radius: 12px;
       text-decoration:none;
-      box-shadow: 0 10px 22px rgba(0,0,0,0.14);
+      box-shadow: 0 14px 30px rgba(255,196,57,.20);
+      border: 1px solid rgba(0,0,0,0.08);
     }
-    .paypal-btn:hover{ opacity:0.9; }
+    .paypal-btn:hover{ opacity:.92; }
+
     .note{
-      font-size: 12.5px;
-      color: var(--muted);
       margin-top: 10px;
+      color: rgba(255,255,255,.55);
+      font-size: 12px;
     }
 
-    /* Footer / promo */
-    .below{
-      max-width: 900px;
-      margin: 28px auto 0;
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
+    .tips{
+      padding: 18px 18px 20px 18px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      background: rgba(0,0,0,0.14);
     }
-    .info{
-      background:#fff;
-      border:1px solid var(--border);
-      border-radius: 16px;
-      padding: 16px;
-      box-shadow: var(--shadow-soft);
+    .tips h3{
+      margin:0 0 10px 0;
+      font-size: 14px;
+      letter-spacing: -.2px;
     }
-    .info h3{
-      margin:0 0 8px 0;
-      font-size: 15px;
-      font-weight: 900;
-    }
-    .info p{
+    .tips ul{
       margin:0;
-      color:#555;
-      line-height:1.6;
-      font-size: 13.5px;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
     }
 
-    @media (max-width: 900px){
-      .hero-inner{ grid-template-columns: 1fr; }
-      .tool-wrap{ margin-top: -26px; }
-      .below{ grid-template-columns: 1fr; }
+    footer{
+      margin-top: 26px;
+      color: rgba(255,255,255,.45);
+      font-size: 12px;
+      text-align:center;
     }
+    footer a{
+      color: rgba(255,255,255,.65);
+      text-decoration:none;
+    }
+    footer a:hover{ text-decoration:underline; }
   </style>
 </head>
 
 <body>
-
-  <!-- NAV -->
-  <div class="nav">
-    <div class="nav-inner">
+  <div class="wrap">
+    <div class="topbar">
       <a class="brand" href="/">
-        <span class="dot"></span>
-        Shorts → YouTube
+        <span class="brand-badge">S</span>
+        <span>
+          Shorts to YouTube Converter
+          <small>Convert Shorts → 16:9 YouTube videos</small>
+        </span>
       </a>
 
-      <div class="nav-links">
-        <!-- Replace this with your real YouTube link -->
-        <a href="https://www.youtube.com/@SailorSailorAdventures" target="_blank" rel="noopener">YouTube</a>
-
-        <a class="nav-cta" id="paypal-btn-top"
-           href="https://paypal.me/shortstoyoutube"
-           target="_blank"
-           rel="noopener">💛 Support</a>
-      </div>
+      <a class="pill" href="https://shortstoyoutube.com" target="_blank" rel="noopener">
+        🔗 shortstoyoutube.com
+      </a>
     </div>
-  </div>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-inner">
-      <div>
-        <h1>Convert Shorts to YouTube<br/>in one click.</h1>
+    <div class="grid">
+      <div class="hero">
+        <h1>Convert Shorts to YouTube (16:9)</h1>
         <p>
-          Turn vertical Shorts into clean 16:9 videos using Blur Background, Fit + Zoom, or Crop to Fill.
-          No signup. Fast downloads.
+          Upload a vertical Short and export a clean 16:9 version. Choose blur background,
+          minimal crop, or full crop-to-fill. Fast, simple, and mobile-friendly.
         </p>
       </div>
 
-      <div class="banner-card">
-        <img src="{{ url_for('static', filename='channels4_banner.jpg') }}" alt="Banner">
-        <div class="banner-meta">
-          <p class="title">Created by Royain</p>
-          <p class="sub">If this tool helps your workflow, consider supporting to keep it online.</p>
+      <div class="card">
+        <div class="card-head">
+          <h2>Upload & convert</h2>
+          <div class="sub">Pick a file, select a format, then download the result.</div>
         </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- MAIN -->
-  <main class="main">
-    <div class="container">
+        <form method="post" action="/convert" enctype="multipart/form-data">
+          <input class="file" type="file" name="video" accept="video/*" required />
 
-      <div class="tool-wrap">
-        <div class="card">
-          <h2>Shorts → YouTube (16:9)</h2>
+          <div class="box">
+            <div class="box-title">Choose format</div>
 
-          <form method="post" action="/convert" enctype="multipart/form-data">
-            <input type="file" name="video" accept="video/*" required />
+            <label>
+              <input type="radio" name="mode" value="blur" checked />
+              <span><b>Blur background</b> (recommended)</span>
+            </label>
 
-            <div class="box">
-              <div class="box-title">Choose format:</div>
+            <label>
+              <input type="radio" name="mode" value="fitzoom" />
+              <span><b>Fit + slight zoom</b> (minimal crop)</span>
+            </label>
 
-              <label>
-                <input type="radio" name="mode" value="blur" checked />
-                Blur background (recommended)
-              </label>
+            <label>
+              <input type="radio" name="mode" value="crop" />
+              <span><b>Crop to fill</b> (no blur, full 16:9)</span>
+            </label>
+          </div>
 
-              <label>
-                <input type="radio" name="mode" value="fitzoom" />
-                Fit + slight zoom (minimal crop)
-              </label>
-
-              <label>
-                <input type="radio" name="mode" value="crop" />
-                Crop to fill (no blur, full 16:9)
-              </label>
-            </div>
-
-            <button id="convert-btn" type="submit" class="convert-btn">
+          <div class="actions">
+            <button id="convert-btn" type="submit" class="btn btn-primary">
               Convert & Download
             </button>
+          </div>
 
-            <hr />
+          <hr class="divider" />
 
-            <div class="donate">
-              <p style="margin:0 0 12px 0; font-weight:700;">
-                ❤️ If this tool saved you time, you can support it:
-              </p>
+          <div class="donate">
+            <p>❤️ If this tool saved you time, you can support it:</p>
 
-              <a id="paypal-btn"
-                 class="paypal-btn"
-                 href="https://paypal.me/shortstoyoutube"
-                 target="_blank"
-                 rel="noopener">
-                💛 Support via PayPal
-              </a>
+            <a id="paypal-btn" class="paypal-btn"
+               href="https://paypal.me/shortstoyoutube"
+               target="_blank" rel="noopener">
+              💛 Support via PayPal
+            </a>
 
-              <div class="note">One-time support • Secure PayPal checkout</div>
-            </div>
-          </form>
+            <div class="note">One-time support • Secure PayPal checkout</div>
+          </div>
+        </form>
+
+        <div class="tips">
+          <h3>Tips</h3>
+          <ul>
+            <li><b>Blur</b> keeps the whole video visible and looks great on YouTube.</li>
+            <li><b>Fit + zoom</b> is subtle and avoids heavy cropping.</li>
+            <li><b>Crop</b> fills the frame but may cut edges of the original.</li>
+          </ul>
         </div>
       </div>
-
-      <!-- BELOW INFO (simple + professional) -->
-      <div class="below">
-        <div class="info">
-          <h3>How it works</h3>
-          <p>Upload a Short → pick a format → click Convert → your 16:9 file downloads automatically.</p>
-        </div>
-
-        <div class="info">
-          <h3>Best results</h3>
-          <p>Use “Blur background” for cleanest look. “Fit + zoom” keeps more of your original frame.</p>
-        </div>
-      </div>
-
     </div>
-  </main>
 
-  <!-- Click tracking (must be AFTER the elements exist) -->
+    <footer>
+      © <span id="yr"></span> Shorts to YouTube Converter •
+      <a href="https://paypal.me/shortstoyoutube" target="_blank" rel="noopener">Support</a>
+    </footer>
+  </div>
+
   <script>
-    // Convert click
+    // year
+    document.getElementById("yr").textContent = new Date().getFullYear();
+
+    // Track button clicks (ensure GA exists)
     const convertBtn = document.getElementById("convert-btn");
-    if (convertBtn) {
-      convertBtn.addEventListener("click", () => {
-        if (typeof gtag === "function") gtag("event", "convert_click");
-      });
+    if (convertBtn && typeof gtag === "function") {
+      convertBtn.addEventListener("click", () => gtag("event", "convert_click"));
     }
 
-    // Donate click (button inside card)
     const donateBtn = document.getElementById("paypal-btn");
-    if (donateBtn) {
-      donateBtn.addEventListener("click", () => {
-        if (typeof gtag === "function") gtag("event", "donate_click");
-      });
-    }
-
-    // Donate click (top nav)
-    const donateBtnTop = document.getElementById("paypal-btn-top");
-    if (donateBtnTop) {
-      donateBtnTop.addEventListener("click", () => {
-        if (typeof gtag === "function") gtag("event", "donate_click_topnav");
-      });
+    if (donateBtn && typeof gtag === "function") {
+      donateBtn.addEventListener("click", () => gtag("event", "donate_click"));
     }
   </script>
-
 </body>
 </html>
-
