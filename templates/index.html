@@ -16,7 +16,6 @@
 
   <style>
     :root{
-      /* ✅ Light theme */
       --bg: #F8FAFC;
       --bg2:#EEF2FF;
       --card:#FFFFFF;
@@ -41,12 +40,8 @@
       padding: 26px 16px 64px;
     }
 
-    .wrap{
-      max-width: 980px;
-      margin: 0 auto;
-    }
+    .wrap{ max-width: 980px; margin: 0 auto; }
 
-    /* ✅ Sticky top bar */
     .topbar{
       position: sticky;
       top: 0;
@@ -75,7 +70,6 @@
       min-width: 0;
     }
 
-    /* ✅ Your SailorSailorAdventures logo */
     .brand-logo{
       width: 38px;
       height: 38px;
@@ -87,9 +81,7 @@
       flex: 0 0 auto;
     }
 
-    .brand span{
-      min-width: 0;
-    }
+    .brand span{ min-width: 0; }
     .brand-title{
       display:block;
       white-space: nowrap;
@@ -104,11 +96,18 @@
       font-weight:700;
       font-size:12px;
       margin-top:2px;
-      letter-spacing:0;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
+    /* ✅ clickable YouTube channel name */
+    .yt-link{
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 900;
+    }
+    .yt-link:hover{ text-decoration: underline; }
 
     .top-actions{
       display:flex;
@@ -138,7 +137,7 @@
       opacity: .95;
     }
 
-    /* ✅ Buy Me a Coffee button */
+    /* ✅ Buy me a coffee button (NOW links to PayPal) */
     .coffee-btn{
       display:inline-flex;
       align-items:center;
@@ -202,24 +201,11 @@
       overflow:hidden;
     }
 
-    .card-head{
-      padding: 18px 18px 0 18px;
-    }
-    .card-head h2{
-      margin:0;
-      font-size: 18px;
-      letter-spacing: -.2px;
-    }
-    .card-head .sub{
-      margin-top:6px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height:1.5;
-    }
+    .card-head{ padding: 18px 18px 0 18px; }
+    .card-head h2{ margin:0; font-size: 18px; letter-spacing: -.2px; }
+    .card-head .sub{ margin-top:6px; color: var(--muted); font-size: 13px; line-height:1.5; }
 
-    form{
-      padding: 14px 18px 18px 18px;
-    }
+    form{ padding: 14px 18px 18px 18px; }
 
     .file{
       width:100%;
@@ -238,12 +224,7 @@
       border: 1px solid var(--line);
       background: rgba(255,255,255,0.78);
     }
-    .box-title{
-      font-weight: 900;
-      margin-bottom: 10px;
-      font-size: 13px;
-      color: var(--text);
-    }
+    .box-title{ font-weight: 900; margin-bottom: 10px; font-size: 13px; color: var(--text); }
 
     label{
       display:flex;
@@ -262,17 +243,9 @@
       background: rgba(59,130,246,0.06);
       color: var(--text);
     }
-    input[type="radio"]{
-      margin-top: 3px;
-      accent-color: var(--accent);
-    }
+    input[type="radio"]{ margin-top: 3px; accent-color: var(--accent); }
 
-    .actions{
-      margin-top: 14px;
-      display:flex;
-      flex-direction:column;
-      gap: 10px;
-    }
+    .actions{ margin-top: 14px; display:flex; flex-direction:column; gap: 10px; }
 
     .btn{
       width:100%;
@@ -298,15 +271,9 @@
       border-top: 1px solid rgba(15,23,42,0.10);
     }
 
-    .donate{
-      text-align:center;
-      padding-top: 4px;
-    }
-    .donate p{
-      margin:0 0 12px 0;
-      color: var(--muted);
-      font-size: 13px;
-    }
+    .donate{ text-align:center; padding-top: 4px; }
+    .donate p{ margin:0 0 12px 0; color: var(--muted); font-size: 13px; }
+
     .paypal-btn{
       display:inline-flex;
       align-items:center;
@@ -328,29 +295,15 @@
       box-shadow: 0 18px 36px rgba(245,158,11,.18);
     }
 
-    .note{
-      margin-top: 10px;
-      color: rgba(71,85,105,.85);
-      font-size: 12px;
-    }
+    .note{ margin-top: 10px; color: rgba(71,85,105,.85); font-size: 12px; }
 
     .tips{
       padding: 18px 18px 20px 18px;
       border-top: 1px solid rgba(15,23,42,0.10);
       background: rgba(255,255,255,0.70);
     }
-    .tips h3{
-      margin:0 0 10px 0;
-      font-size: 14px;
-      letter-spacing: -.2px;
-    }
-    .tips ul{
-      margin:0;
-      padding-left: 18px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.6;
-    }
+    .tips h3{ margin:0 0 10px 0; font-size: 14px; letter-spacing: -.2px; }
+    .tips ul{ margin:0; padding-left: 18px; color: var(--muted); font-size: 13px; line-height: 1.6; }
 
     footer{
       margin-top: 18px;
@@ -358,21 +311,13 @@
       font-size: 12px;
       text-align:center;
     }
-    footer a{
-      color: rgba(59,130,246,.95);
-      text-decoration:none;
-    }
+    footer a{ color: rgba(59,130,246,.95); text-decoration:none; }
     footer a:hover{ text-decoration:underline; }
 
     .footer-logo{
-      width:22px;
-      height:22px;
-      border-radius:7px;
-      object-fit: cover;
+      width:22px; height:22px; border-radius:7px; object-fit: cover;
       border: 1px solid rgba(15,23,42,0.10);
-      vertical-align: middle;
-      margin-right: 8px;
-      background:#fff;
+      vertical-align: middle; margin-right: 8px; background:#fff;
     }
   </style>
 </head>
@@ -386,14 +331,20 @@
         <span>
           <span class="brand-title">Shorts to YouTube Converter</span>
           <small>
-            YouTube: <b>SailorSailorAdventures</b> • Convert Shorts ↔ YouTube videos
+            YouTube:
+            <!-- ✅ CHANGE THIS to your real channel link -->
+            <a class="yt-link" id="yt-link" href="YOUTUBE_CHANNEL_URL" target="_blank" rel="noopener">
+              SailorSailorAdventures
+            </a>
+            • Convert Shorts ↔ YouTube videos
           </small>
         </span>
       </a>
 
       <div class="top-actions">
-        <a id="bmc-btn" class="coffee-btn"
-           href="https://www.buymeacoffee.com/shortstoyoutube"
+        <!-- ✅ NOW Buy me a coffee goes to PayPal (same as Support) -->
+        <a id="coffee-paypal-top" class="coffee-btn"
+           href="https://paypal.me/shortstoyoutube"
            target="_blank" rel="noopener">
           ☕ Buy me a coffee
         </a>
@@ -422,7 +373,6 @@
         <form method="post" action="/convert" enctype="multipart/form-data">
           <input class="file" type="file" name="video" accept="video/*" required />
 
-          <!-- ✅ Conversion type (direction) -->
           <div class="box">
             <div class="box-title">Conversion type</div>
 
@@ -437,7 +387,6 @@
             </label>
           </div>
 
-          <!-- ✅ Options (Shorts → YouTube) -->
           <div id="box-sty" class="box">
             <div class="box-title">Choose format</div>
 
@@ -457,7 +406,6 @@
             </label>
           </div>
 
-          <!-- ✅ Options (YouTube → Shorts) -->
           <div id="box-yts" class="box" style="display:none;">
             <div class="box-title">Choose Shorts format</div>
 
@@ -488,13 +436,14 @@
           <div class="donate">
             <p>❤️ If this tool saved you time, you can support it:</p>
 
+            <!-- ✅ Support button (PayPal) -->
             <a id="paypal-btn" class="paypal-btn"
                href="https://paypal.me/shortstoyoutube"
                target="_blank" rel="noopener">
-              💛 Support via PayPal
+              💛 Support (PayPal)
             </a>
 
-            <div class="note">One-time support • Secure PayPal checkout</div>
+            <div class="note">“Buy me a coffee” and “Support” both open the same PayPal link.</div>
           </div>
         </form>
 
@@ -512,8 +461,9 @@
     <footer>
       <img class="footer-logo" src="/static/sailor-logo.png" alt="Sailor Sailor Adventures logo" />
       © <span id="yr"></span> Shorts to YouTube Converter •
-      YouTube: <b>SailorSailorAdventures</b> •
-      <a href="https://paypal.me/shortstoyoutube" target="_blank" rel="noopener">Support</a>
+      YouTube:
+      <a class="yt-link" href="https://www.youtube.com/@SailorSailorAdventures" target="_blank" rel="noopener">SailorSailorAdventures</a>
+      • <a href="https://paypal.me/shortstoyoutube" target="_blank" rel="noopener">Support</a>
     </footer>
   </div>
 
@@ -527,17 +477,22 @@
       convertBtn.addEventListener("click", () => gtag("event", "convert_click"));
     }
 
-    const donateBtn = document.getElementById("paypal-btn");
-    if (donateBtn && typeof gtag === "function") {
-      donateBtn.addEventListener("click", () => gtag("event", "donate_click"));
+    const paypalBtn = document.getElementById("paypal-btn");
+    if (paypalBtn && typeof gtag === "function") {
+      paypalBtn.addEventListener("click", () => gtag("event", "donate_click"));
     }
 
-    const bmcBtn = document.getElementById("bmc-btn");
-    if (bmcBtn && typeof gtag === "function") {
-      bmcBtn.addEventListener("click", () => gtag("event", "bmc_click"));
+    const coffeeTop = document.getElementById("coffee-paypal-top");
+    if (coffeeTop && typeof gtag === "function") {
+      coffeeTop.addEventListener("click", () => gtag("event", "coffee_click"));
     }
 
-    // ✅ Toggle UI + ensure correct form submission
+    const ytLink = document.getElementById("yt-link");
+    if (ytLink && typeof gtag === "function") {
+      ytLink.addEventListener("click", () => gtag("event", "youtube_channel_click"));
+    }
+
+    // Toggle UI + ensure correct form submission
     const dirRadios = document.querySelectorAll('input[name="direction"]');
     const boxSTY = document.getElementById("box-sty");
     const boxYTS = document.getElementById("box-yts");
@@ -562,8 +517,6 @@
       if (selected === "youtube_to_shorts") {
         boxSTY.style.display = "none";
         boxYTS.style.display = "block";
-
-        // ✅ Only visible box submits "mode"
         setBoxEnabled(boxSTY, false);
         setBoxEnabled(boxYTS, true);
         ensureOneModeChecked(boxYTS);
@@ -580,7 +533,6 @@
       } else {
         boxSTY.style.display = "block";
         boxYTS.style.display = "none";
-
         setBoxEnabled(boxSTY, true);
         setBoxEnabled(boxYTS, false);
         ensureOneModeChecked(boxSTY);
