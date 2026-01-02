@@ -59,6 +59,7 @@
       box-shadow: 0 10px 30px rgba(15,23,42,.06);
     }
 
+    /* ✅ Brand container */
     .brand{
       display:flex;
       align-items:center;
@@ -81,27 +82,40 @@
       flex: 0 0 auto;
     }
 
-    .brand span{ min-width: 0; }
+    /* ✅ Title never gets pushed by links */
+    .brand-text{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      min-width:0;
+    }
+
     .brand-title{
       display:block;
+      font-size: 14px;
+      font-weight: 900;
+      line-height: 1.15;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      font-size: 14px;
-      font-weight: 900;
+      max-width: 360px;
     }
-    .brand small{
-      display:block;
+    @media (max-width: 520px){
+      .brand-title{ max-width: 220px; }
+    }
+
+    .brand-sub{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap: wrap; /* ✅ allows wrapping so title stays clean */
       color: var(--muted);
       font-weight:700;
       font-size:12px;
-      margin-top:2px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      line-height: 1.25;
     }
 
-    /* ✅ clickable YouTube channel name */
+    /* ✅ YouTube CTA (small + classic red icon) */
     .yt-link{
       color: var(--accent);
       text-decoration: none;
@@ -109,6 +123,42 @@
     }
     .yt-link:hover{ text-decoration: underline; }
 
+    .yt-cta{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      font-size:12px;       /* ✅ not too small */
+      font-weight:800;
+      text-decoration:none;
+    }
+
+    .yt-play{
+      width: 16px;          /* ✅ small but clear */
+      height: 12px;
+      border-radius: 4px;
+      background: #ff0000;
+      color: #ffffff;
+      font-size: 9px;
+      font-weight: 900;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      flex: 0 0 auto;
+    }
+
+    .yt-hint{
+      margin-left: 6px;
+      padding: 1px 6px;
+      font-size: 10px;
+      font-weight: 800;
+      border-radius: 999px;
+      background: rgba(255,0,0,0.10);
+      color: #cc0000;
+      white-space: nowrap;
+    }
+
+    /* ✅ TikTok pill stays in top-actions only */
     .top-actions{
       display:flex;
       align-items:center;
@@ -137,7 +187,6 @@
       opacity: .95;
     }
 
-    /* ✅ Buy me a coffee button (NOW links to PayPal) */
     .coffee-btn{
       display:inline-flex;
       align-items:center;
@@ -325,29 +374,32 @@
 <body>
   <div class="wrap">
     <div class="topbar">
+      <!-- ✅ Brand area (logo + title + small CTA line) -->
       <a class="brand" href="/">
+        <img class="brand-logo" src="/static/sailor-logo.png" alt="Sailor Sailor Adventures logo" />
 
+        <span class="brand-text">
           <span class="brand-title">Shorts to YouTube Converter</span>
 
-          <a class="yt-link yt-cta" id="yt-link"
-   href="https://www.youtube.com/@SailorSailorAdventures"
-   target="_blank" rel="noopener">
-  ▶️ SailorSailorAdventures
-  <span class="yt-hint">Watch kids adventures 🎥</span>
-</a>
-<a class="pill"
-   href="https://www.tiktok.com/@sailorsalior"
-   target="_blank" rel="noopener">
-  🎵 Follow on TikTok
-</a>
-
-
-          </small>
+          <div class="brand-sub">
+            <a class="yt-link yt-cta" id="yt-link"
+               href="https://www.youtube.com/@SailorSailorAdventures"
+               target="_blank" rel="noopener">
+              <span class="yt-play">▶</span>
+              SailorSailorAdventures
+              <span class="yt-hint">Watch kids adventures 🎥</span>
+            </a>
+          </div>
         </span>
       </a>
 
       <div class="top-actions">
-        <!-- ✅ NOW Buy me a coffee goes to PayPal (same as Support) -->
+        <a class="pill"
+           href="https://www.tiktok.com/@sailorsalior"
+           target="_blank" rel="noopener">
+          🎵 Follow on TikTok
+        </a>
+
         <a id="coffee-paypal-top" class="coffee-btn"
            href="https://paypal.me/shortstoyoutube"
            target="_blank" rel="noopener">
@@ -441,7 +493,6 @@
           <div class="donate">
             <p>❤️ If this tool saved you time, you can support it:</p>
 
-            <!-- ✅ Support button (PayPal) -->
             <a id="paypal-btn" class="paypal-btn"
                href="https://paypal.me/shortstoyoutube"
                target="_blank" rel="noopener">
