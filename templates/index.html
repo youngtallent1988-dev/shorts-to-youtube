@@ -18,51 +18,55 @@
     :root{
       --bg:#F8FAFC;
       --bg2:#EEF2FF;
+      --card:#FFFFFF;
       --text:#0F172A;
       --muted:#475569;
-      --line:rgba(15,23,42,.1);
+      --line: rgba(15, 23, 42, 0.10);
       --accent:#3B82F6;
-      --shadow:0 18px 50px rgba(15,23,42,.1);
+      --coffee:#F59E0B;
+      --shadow: 0 18px 50px rgba(15,23,42,.10);
     }
 
     *{box-sizing:border-box}
     body{
       margin:0;
-      font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background:linear-gradient(180deg,var(--bg),var(--bg2));
-      color:var(--text);
-      padding:24px 16px 60px;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1100px 520px at 15% 0%, rgba(59,130,246,0.14), transparent 60%),
+        radial-gradient(900px 520px at 90% 10%, rgba(245,158,11,0.10), transparent 55%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      min-height:100vh;
+      padding: 26px 16px 64px;
     }
 
-    .wrap{max-width:980px;margin:0 auto}
+    .wrap{ max-width: 980px; margin: 0 auto; }
 
-    /* ================= TOP BAR ================= */
+    /* ========= TOPBAR ========= */
     .topbar{
+      position: sticky;
+      top: 0;
+      z-index: 50;
       display:flex;
-      align-items:center;
+      align-items:flex-start;
       justify-content:space-between;
-      gap:16px;
-      padding:12px;
-      border:1px solid var(--line);
-      border-radius:16px;
-      background:#fff;
-      box-shadow:0 10px 30px rgba(0,0,0,.05);
-      margin-bottom:20px;
+      gap:12px;
+      margin: 0 auto 18px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.80);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(15,23,42,.06);
     }
 
+    /* NOTE: brand is now a div (not an <a>) to avoid nested link issues */
     .brand{
       display:flex;
-      align-items:center;
-      gap:12px;
+      align-items:flex-start;
+      gap:10px;
       min-width:0;
-    }
-
-    .brand-logo{
-      width:38px;
-      height:38px;
-      border-radius:10px;
-      background:#fff;
-      border:1px solid var(--line);
+      flex: 1 1 auto;
     }
 
     .brand-text{
@@ -72,151 +76,524 @@
       min-width:0;
     }
 
-    /* ✅ TITLE WILL NEVER BE CUT */
+    /* ✅ Title priority: never pushed off by the channel line */
     .brand-title{
-      font-size:15px;
-      font-weight:900;
-      white-space:nowrap;
-      overflow:visible;
+      display:block;
+      font-size: 14px;
+      font-weight: 900;
+      line-height: 1.15;
+      white-space: nowrap;
+      overflow: visible;     /* do NOT clip */
+      text-overflow: unset;
+      max-width: 100%;
     }
 
     .brand-sub{
       display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      font-size:12px;
+      flex-wrap:wrap;        /* allows YouTube line to wrap instead of cutting title */
       align-items:center;
+      gap:8px;
+      color: var(--muted);
+      font-weight:700;
+      font-size:12px;
+      line-height:1.25;
     }
 
-    /* ===== YouTube CTA ===== */
+    .subnote{
+      color: var(--muted);
+      font-weight:700;
+    }
+
+    /* ========= YouTube CTA (classic red icon) ========= */
     .yt-cta{
       display:inline-flex;
       align-items:center;
       gap:6px;
-      text-decoration:none;
-      font-weight:800;
-      color:var(--accent);
       font-size:12px;
+      font-weight:900;
+      text-decoration:none;
+      color: var(--accent);
+      white-space: nowrap;
     }
+    .yt-cta:hover{ text-decoration: underline; }
 
     .yt-play{
       width:16px;
       height:12px;
+      border-radius:4px;
       background:#ff0000;
       color:#fff;
       font-size:9px;
       font-weight:900;
-      border-radius:4px;
-      display:flex;
+      display:inline-flex;
       align-items:center;
       justify-content:center;
+      line-height:1;
+      flex: 0 0 auto;
     }
 
     .yt-hint{
-      padding:1px 6px;
-      font-size:10px;
-      font-weight:800;
-      background:rgba(255,0,0,.1);
-      color:#cc0000;
-      border-radius:999px;
-      white-space:nowrap;
+      margin-left: 6px;
+      padding: 1px 6px;
+      font-size: 10px;
+      font-weight: 800;
+      border-radius: 999px;
+      background: rgba(255,0,0,0.10);
+      color: #cc0000;
+      white-space: nowrap;
     }
 
-    /* ===== ACTION BUTTONS ===== */
+    /* ========= Right buttons ========= */
     .top-actions{
       display:flex;
+      align-items:center;
       gap:10px;
-      flex-wrap:wrap;
+      flex: 0 0 auto;
+      flex-wrap: wrap;
+      justify-content:flex-end;
     }
 
     .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
       padding:10px 12px;
-      border-radius:999px;
       border:1px solid var(--line);
-      background:#fff;
+      background: rgba(255,255,255,0.95);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 13px;
       text-decoration:none;
-      font-size:13px;
-      color:var(--muted);
-      font-weight:700;
+      transition: transform .08s ease, box-shadow .15s ease, opacity .15s ease;
+      box-shadow: 0 8px 22px rgba(15,23,42,.06);
+      white-space: nowrap;
+    }
+    .pill:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 12px 28px rgba(15,23,42,.10);
+      opacity: .95;
     }
 
     .coffee-btn{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
       padding:10px 14px;
-      border-radius:999px;
-      background:rgba(245,158,11,.15);
-      border:1px solid rgba(245,158,11,.4);
+      border-radius: 999px;
+      background: rgba(245,158,11,0.15);
+      border: 1px solid rgba(245,158,11,0.35);
+      color: #7C4A00;
+      font-weight: 900;
+      font-size: 13px;
       text-decoration:none;
-      font-weight:900;
-      color:#7C4A00;
+      transition: transform .08s ease, box-shadow .15s ease, opacity .15s ease;
+      box-shadow: 0 10px 24px rgba(245,158,11,.10);
+      white-space: nowrap;
+    }
+    .coffee-btn:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 14px 32px rgba(245,158,11,.16);
+      opacity: .95;
     }
 
-    /* ================= CONTENT ================= */
+    @media (max-width: 900px){
+      .topbar{ position: relative; top:auto; }
+    }
+
+    /* ========= MAIN LAYOUT ========= */
+    .grid{
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 18px;
+      align-items:start;
+    }
+    @media (max-width: 900px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+
     .hero{
-      background:#fff;
-      border-radius:18px;
-      padding:24px;
-      box-shadow:var(--shadow);
-      margin-bottom:20px;
+      padding: 22px 20px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.88));
+      box-shadow: var(--shadow);
+    }
+    .hero h1{
+      margin:0 0 10px 0;
+      font-size: 30px;
+      line-height: 1.1;
+      letter-spacing: -.4px;
+    }
+    .hero p{
+      margin:0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+      max-width: 55ch;
     }
 
-    .hero h1{margin:0 0 10px;font-size:28px}
-    .hero p{margin:0;color:var(--muted)}
+    .card{
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.92));
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
 
-    /* ================= FOOTER ================= */
+    .card-head{ padding: 18px 18px 0 18px; }
+    .card-head h2{ margin:0; font-size: 18px; letter-spacing: -.2px; }
+    .card-head .sub{ margin-top:6px; color: var(--muted); font-size: 13px; line-height:1.5; }
+
+    form{ padding: 14px 18px 18px 18px; }
+
+    .file{
+      width:100%;
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px dashed rgba(15,23,42,0.22);
+      background: rgba(255,255,255,0.92);
+      color: var(--text);
+      cursor:pointer;
+    }
+
+    .box{
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.78);
+    }
+    .box-title{ font-weight: 900; margin-bottom: 10px; font-size: 13px; color: var(--text); }
+
+    label{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      padding: 10px 10px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      cursor:pointer;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    label:hover{
+      border-color: rgba(15,23,42,0.10);
+      background: rgba(59,130,246,0.06);
+      color: var(--text);
+    }
+    input[type="radio"]{ margin-top: 3px; accent-color: var(--accent); }
+
+    .actions{ margin-top: 14px; display:flex; flex-direction:column; gap: 10px; }
+
+    .btn{
+      width:100%;
+      border:none;
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 16px;
+      font-weight: 900;
+      cursor:pointer;
+      transition: transform .06s ease, opacity .15s ease, box-shadow .15s ease;
+    }
+    .btn:active{ transform: translateY(1px); }
+    .btn-primary{
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 14px 30px rgba(59,130,246,.22);
+    }
+    .btn-primary:hover{ opacity:.94; }
+
+    .divider{
+      margin: 18px 0;
+      border: none;
+      border-top: 1px solid rgba(15,23,42,0.10);
+    }
+
+    .donate{ text-align:center; padding-top: 4px; }
+    .donate p{ margin:0 0 12px 0; color: var(--muted); font-size: 13px; }
+
+    .paypal-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding: 12px 18px;
+      border-radius: 14px;
+      background: rgba(245,158,11,0.18);
+      color:#7C4A00;
+      font-weight: 900;
+      text-decoration:none;
+      box-shadow: 0 14px 30px rgba(245,158,11,.14);
+      border: 1px solid rgba(245,158,11,0.35);
+      transition: transform .08s ease, opacity .15s ease, box-shadow .15s ease;
+    }
+    .paypal-btn:hover{
+      transform: translateY(-1px);
+      opacity:.95;
+      box-shadow: 0 18px 36px rgba(245,158,11,.18);
+    }
+
+    .note{ margin-top: 10px; color: rgba(71,85,105,.85); font-size: 12px; }
+
+    .tips{
+      padding: 18px 18px 20px 18px;
+      border-top: 1px solid rgba(15,23,42,0.10);
+      background: rgba(255,255,255,0.70);
+    }
+    .tips h3{ margin:0 0 10px 0; font-size: 14px; letter-spacing: -.2px; }
+    .tips ul{ margin:0; padding-left: 18px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+
     footer{
-      margin-top:30px;
+      margin-top: 18px;
+      color: rgba(71,85,105,.80);
+      font-size: 12px;
       text-align:center;
-      font-size:12px;
-      color:var(--muted);
     }
-    footer a{color:var(--accent);text-decoration:none}
+    footer a{ color: rgba(59,130,246,.95); text-decoration:none; }
+    footer a:hover{ text-decoration:underline; }
   </style>
 </head>
 
 <body>
-<div class="wrap">
+  <div class="wrap">
 
-  <!-- ===== TOP BAR ===== -->
-  <div class="topbar">
-    <div class="brand">
-      <img src="/static/sailor-logo.png" class="brand-logo" alt="logo">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-text">
+          <span class="brand-title">Shorts to YouTube Converter</span>
 
-      <div class="brand-text">
-        <div class="brand-title">Shorts to YouTube Converter</div>
+          <div class="brand-sub">
+            <a class="yt-cta" id="yt-link"
+               href="https://www.youtube.com/@SailorSailorAdventures"
+               target="_blank" rel="noopener">
+              <span class="yt-play">▶</span>
+              SailorSailorAdventures
+              <span class="yt-hint">Watch kids adventures 🎥</span>
+            </a>
 
-        <div class="brand-sub">
-          <a class="yt-cta"
-             href="https://www.youtube.com/@SailorSailorAdventures"
-             target="_blank" rel="noopener">
-            <span class="yt-play">▶</span>
-            SailorSailorAdventures
-            <span class="yt-hint">Watch kids adventures 🎥</span>
-          </a>
+            <span class="subnote">• Convert Shorts ↔ YouTube</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <a class="pill"
+           href="https://www.tiktok.com/@sailorsalior"
+           target="_blank" rel="noopener">
+          🎵 Follow on TikTok
+        </a>
+
+        <a id="coffee-paypal-top" class="coffee-btn"
+           href="https://paypal.me/shortstoyoutube"
+           target="_blank" rel="noopener">
+          ☕ Buy me a coffee
+        </a>
+
+        <a class="pill" href="https://shortstoyoutube.com" target="_blank" rel="noopener">
+          🔗 shortstoyoutube.com
+        </a>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="hero">
+        <h1 id="hero-title">Convert Shorts to YouTube (16:9)</h1>
+        <p id="hero-desc">
+          Upload a vertical Short and export a clean 16:9 version. Choose blur background,
+          minimal crop, or full crop-to-fill. Fast, simple, and mobile-friendly.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>Upload & convert</h2>
+          <div class="sub">Pick a file, select a format, then download the result.</div>
+        </div>
+
+        <form method="post" action="/convert" enctype="multipart/form-data">
+          <input class="file" type="file" name="video" accept="video/*" required />
+
+          <div class="box">
+            <div class="box-title">Conversion type</div>
+
+            <label>
+              <input type="radio" name="direction" value="shorts_to_youtube" checked />
+              <span><b>Shorts → YouTube</b> (9:16 → 16:9)</span>
+            </label>
+
+            <label>
+              <input type="radio" name="direction" value="youtube_to_shorts" />
+              <span><b>YouTube → Shorts</b> (16:9 → 9:16)</span>
+            </label>
+          </div>
+
+          <div id="box-sty" class="box">
+            <div class="box-title">Choose format</div>
+
+            <label>
+              <input type="radio" name="mode" value="blur" checked />
+              <span><b>Blur background</b> (recommended)</span>
+            </label>
+
+            <label>
+              <input type="radio" name="mode" value="fitzoom" />
+              <span><b>Fit + slight zoom</b> (minimal crop)</span>
+            </label>
+
+            <label>
+              <input type="radio" name="mode" value="crop" />
+              <span><b>Crop to fill</b> (no blur, full 16:9)</span>
+            </label>
+          </div>
+
+          <div id="box-yts" class="box" style="display:none;">
+            <div class="box-title">Choose Shorts format</div>
+
+            <label>
+              <input type="radio" name="mode" value="crop" />
+              <span><b>Center crop</b> (recommended for Shorts)</span>
+            </label>
+
+            <label>
+              <input type="radio" name="mode" value="blur" />
+              <span><b>Blur background</b> (no content cut off)</span>
+            </label>
+
+            <label>
+              <input type="radio" name="mode" value="fitzoom" checked />
+              <span><b>Fit + slight zoom</b> (minimal crop)</span>
+            </label>
+          </div>
+
+          <div class="actions">
+            <button id="convert-btn" type="submit" class="btn btn-primary">
+              Convert & Download
+            </button>
+          </div>
+
+          <hr class="divider" />
+
+          <div class="donate">
+            <p>❤️ If this tool saved you time, you can support it:</p>
+
+            <a id="paypal-btn" class="paypal-btn"
+               href="https://paypal.me/shortstoyoutube"
+               target="_blank" rel="noopener">
+              💛 Support (PayPal)
+            </a>
+
+            <div class="note">“Buy me a coffee” and “Support” both open the same PayPal link.</div>
+          </div>
+        </form>
+
+        <div class="tips">
+          <h3>Tips</h3>
+          <ul id="tips-list">
+            <li><b>Blur</b> keeps the whole video visible and looks great on YouTube.</li>
+            <li><b>Fit + zoom</b> is subtle and avoids heavy cropping.</li>
+            <li><b>Crop</b> fills the frame but may cut edges of the original.</li>
+          </ul>
         </div>
       </div>
     </div>
 
-    <div class="top-actions">
-      <a class="pill" href="https://www.tiktok.com/@sailorsalior" target="_blank">🎵 TikTok</a>
-      <a class="coffee-btn" href="https://paypal.me/shortstoyoutube" target="_blank">☕ Buy me a coffee</a>
-    </div>
+    <footer>
+      © <span id="yr"></span> Shorts to YouTube Converter •
+      YouTube:
+      <a href="https://www.youtube.com/@SailorSailorAdventures" target="_blank" rel="noopener">SailorSailorAdventures</a>
+      • <a href="https://paypal.me/shortstoyoutube" target="_blank" rel="noopener">Support</a>
+    </footer>
   </div>
 
-  <!-- ===== HERO ===== -->
-  <div class="hero">
-    <h1>Convert Shorts to YouTube (16:9)</h1>
-    <p>Upload a vertical Short and export a clean 16:9 YouTube video.</p>
-  </div>
+  <script>
+    // year
+    document.getElementById("yr").textContent = new Date().getFullYear();
 
-  <footer>
-    © <span id="yr"></span> Shorts to YouTube Converter •
-    <a href="https://www.youtube.com/@SailorSailorAdventures" target="_blank">YouTube</a> •
-    <a href="https://paypal.me/shortstoyoutube" target="_blank">Support</a>
-  </footer>
-</div>
+    // Track clicks
+    const convertBtn = document.getElementById("convert-btn");
+    if (convertBtn && typeof gtag === "function") {
+      convertBtn.addEventListener("click", () => gtag("event", "convert_click"));
+    }
 
-<script>
-  document.getElementById("yr").textContent = new Date().getFullYear();
-</script>
+    const paypalBtn = document.getElementById("paypal-btn");
+    if (paypalBtn && typeof gtag === "function") {
+      paypalBtn.addEventListener("click", () => gtag("event", "donate_click"));
+    }
+
+    const coffeeTop = document.getElementById("coffee-paypal-top");
+    if (coffeeTop && typeof gtag === "function") {
+      coffeeTop.addEventListener("click", () => gtag("event", "coffee_click"));
+    }
+
+    const ytLink = document.getElementById("yt-link");
+    if (ytLink && typeof gtag === "function") {
+      ytLink.addEventListener("click", () => gtag("event", "youtube_channel_click"));
+    }
+
+    // Toggle UI + ensure correct form submission
+    const dirRadios = document.querySelectorAll('input[name="direction"]');
+    const boxSTY = document.getElementById("box-sty");
+    const boxYTS = document.getElementById("box-yts");
+    const heroTitle = document.getElementById("hero-title");
+    const heroDesc = document.getElementById("hero-desc");
+    const tipsList = document.getElementById("tips-list");
+
+    function setBoxEnabled(boxEl, enabled) {
+      const inputs = boxEl.querySelectorAll('input');
+      inputs.forEach(i => { i.disabled = !enabled; });
+    }
+
+    function ensureOneModeChecked(boxEl) {
+      const radios = boxEl.querySelectorAll('input[type="radio"][name="mode"]');
+      const anyChecked = Array.from(radios).some(r => r.checked);
+      if (!anyChecked && radios.length) radios[0].checked = true;
+    }
+
+    function updateUI() {
+      const selected = document.querySelector('input[name="direction"]:checked')?.value || "shorts_to_youtube";
+
+      if (selected === "youtube_to_shorts") {
+        boxSTY.style.display = "none";
+        boxYTS.style.display = "block";
+        setBoxEnabled(boxSTY, false);
+        setBoxEnabled(boxYTS, true);
+        ensureOneModeChecked(boxYTS);
+
+        heroTitle.textContent = "Convert YouTube to Shorts (9:16)";
+        heroDesc.textContent =
+          "Upload a 16:9 YouTube video and export a vertical 9:16 Shorts version. Choose center crop, blur background, or minimal zoom. Great for TikTok, Reels, and Shorts.";
+
+        tipsList.innerHTML = `
+          <li><b>Center crop</b> is the standard Shorts look (cuts left/right).</li>
+          <li><b>Blur</b> keeps the full video visible with a clean background.</li>
+          <li><b>Fit + zoom</b> fills the frame with minimal cropping.</li>
+        `;
+      } else {
+        boxSTY.style.display = "block";
+        boxYTS.style.display = "none";
+        setBoxEnabled(boxSTY, true);
+        setBoxEnabled(boxYTS, false);
+        ensureOneModeChecked(boxSTY);
+
+        heroTitle.textContent = "Convert Shorts to YouTube (16:9)";
+        heroDesc.textContent =
+          "Upload a vertical Short and export a clean 16:9 version. Choose blur background, minimal crop, or full crop-to-fill. Fast, simple, and mobile-friendly.";
+
+        tipsList.innerHTML = `
+          <li><b>Blur</b> keeps the whole video visible and looks great on YouTube.</li>
+          <li><b>Fit + zoom</b> is subtle and avoids heavy cropping.</li>
+          <li><b>Crop</b> fills the frame but may cut edges of the original.</li>
+        `;
+      }
+
+      if (typeof gtag === "function") {
+        gtag("event", "direction_change", { direction: selected });
+      }
+    }
+
+    dirRadios.forEach(r => r.addEventListener("change", updateUI));
+    updateUI();
+  </script>
 </body>
 </html>
