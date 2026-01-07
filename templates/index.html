@@ -25,6 +25,7 @@
       --accent:#3B82F6;
       --coffee:#F59E0B;
       --shadow:0 18px 50px rgba(15,23,42,.10);
+      --tab:#EEF2FF;
     }
 
     *{box-sizing:border-box}
@@ -60,7 +61,6 @@
       flex:1;
     }
 
-    /* ✅ TITLE NEVER CUT */
     .brand-title{
       font-size:15px;
       font-weight:900;
@@ -76,7 +76,6 @@
       font-size:12px;
     }
 
-    /* ===== YouTube CTA ===== */
     .yt-cta{
       display:inline-flex;
       align-items:center;
@@ -109,11 +108,7 @@
       border-radius:999px;
     }
 
-    /* ===== TikTok OFFICIAL BADGE ===== */
-    .tt-cta{
-      text-decoration:none;
-      white-space:nowrap;
-    }
+    .tt-cta{ text-decoration:none; white-space:nowrap; }
 
     .tt-badge{
       position:relative;
@@ -145,17 +140,9 @@
       z-index:-1;
     }
 
-    .tt-badge::before{
-      color:#25F4EE;
-      transform:translate(-1px,-1px);
-    }
+    .tt-badge::before{ color:#25F4EE; transform:translate(-1px,-1px); }
+    .tt-badge::after{ color:#FE2C55; transform:translate(1px,1px); }
 
-    .tt-badge::after{
-      color:#FE2C55;
-      transform:translate(1px,1px);
-    }
-
-    /* ===== ACTION BUTTONS ===== */
     .top-actions{
       display:flex;
       gap:10px;
@@ -213,7 +200,29 @@
 
     .card-head{padding:18px 18px 0}
     .card-head h2{margin:0}
-    .card-head .sub{color:var(--muted);font-size:13px}
+    .card-head .sub{color:var(--muted);font-size:13px;margin-top:6px}
+
+    .tabs{
+      display:flex;
+      gap:8px;
+      padding:12px 18px 0;
+      flex-wrap:wrap;
+    }
+    .tab-btn{
+      border:1px solid var(--line);
+      background:#fff;
+      padding:10px 12px;
+      border-radius:999px;
+      font-weight:800;
+      font-size:13px;
+      cursor:pointer;
+      color:var(--muted);
+    }
+    .tab-btn.active{
+      background:var(--tab);
+      color:var(--text);
+      border-color:rgba(59,130,246,.35);
+    }
 
     form{padding:18px}
 
@@ -229,6 +238,14 @@
       padding:14px;
       border-radius:14px;
       border:1px solid var(--line);
+      background:#fff;
+    }
+
+    .box-title{
+      font-weight:900;
+      font-size:13px;
+      margin-bottom:10px;
+      color:var(--text);
     }
 
     label{
@@ -237,7 +254,9 @@
       padding:10px;
       cursor:pointer;
       font-size:14px;
+      border-radius:12px;
     }
+    label:hover{ background:rgba(15,23,42,0.03); }
 
     .btn-primary{
       margin-top:14px;
@@ -249,6 +268,14 @@
       color:#fff;
       font-weight:900;
       font-size:16px;
+      cursor:pointer;
+    }
+
+    .hint{
+      margin-top:10px;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.4;
     }
 
     footer{
@@ -258,24 +285,8 @@
       color:var(--muted);
     }
 
-    /* ===== NEW: format select ===== */
-    .select{
-      width:100%;
-      padding:12px 12px;
-      border-radius:12px;
-      border:1px solid var(--line);
-      background:#fff;
-      font-weight:700;
-      color:var(--text);
-      outline:none;
-    }
-
-    .hint{
-      margin-top:10px;
-      font-size:12px;
-      color:var(--muted);
-      line-height:1.4;
-    }
+    .panel{ display:none; }
+    .panel.active{ display:block; }
   </style>
 </head>
 
@@ -290,7 +301,7 @@
       <div class="brand-sub">
         <a class="yt-cta"
            href="https://www.youtube.com/@SailorSailorAdventures"
-           target="_blank">
+           target="_blank" rel="noopener">
           <span class="yt-play">▶</span>
           SailorSailorAdventures
           <span class="yt-hint">Watch kids adventures 🎥</span>
@@ -298,7 +309,7 @@
 
         <a class="tt-cta"
            href="https://www.tiktok.com/@sailorsalior"
-           target="_blank">
+           target="_blank" rel="noopener">
           <span class="tt-badge">TikTok</span>
         </a>
       </div>
@@ -307,76 +318,148 @@
     <div class="top-actions">
       <a class="coffee-btn"
          href="https://paypal.me/shortstoyoutube"
-         target="_blank">☕ Buy me a coffee</a>
+         target="_blank" rel="noopener">☕ Buy me a coffee</a>
 
       <a class="pill"
          href="https://shortstoyoutube.com"
-         target="_blank">🔗 shortstoyoutube.com</a>
+         target="_blank" rel="noopener">🔗 shortstoyoutube.com</a>
     </div>
   </div>
 
   <!-- ===== CONTENT ===== -->
   <div class="grid">
     <div class="hero">
-      <h1>Convert Shorts to YouTube (16:9)</h1>
-      <p>Upload a vertical Short and export a clean 16:9 YouTube video.</p>
+      <h1>Fast video tools (simple)</h1>
+      <p>
+        Convert Shorts ↔ YouTube formats and convert common video formats to MP4.
+      </p>
     </div>
 
     <div class="card">
       <div class="card-head">
         <h2>Upload & convert</h2>
-        <div class="sub">Pick a file, select a format, then download.</div>
+        <div class="sub">Choose a tool tab, upload a file, pick options, then download.</div>
       </div>
 
-      <form method="post" action="/convert" enctype="multipart/form-data">
-        <input class="file" type="file" name="video" required>
+      <!-- Tabs -->
+      <div class="tabs">
+        <button type="button" class="tab-btn active" data-tab="p1">Shorts → YouTube</button>
+        <button type="button" class="tab-btn" data-tab="p2">YouTube → Shorts</button>
+        <button type="button" class="tab-btn" data-tab="p3">Video → MP4</button>
+      </div>
 
-        <div class="box">
-          <label><input type="radio" name="direction" value="shorts_to_youtube" checked> Shorts → YouTube</label>
-          <label><input type="radio" name="direction" value="youtube_to_shorts"> YouTube → Shorts</label>
-        </div>
+      <!-- Panel 1: Shorts -> YouTube -->
+      <div class="panel active" id="p1">
+        <form method="post" action="/convert" enctype="multipart/form-data">
+          <input class="file" type="file" name="video" accept="video/*" required>
 
-        <!-- ✅ NEW SECTION: VIDEO FORMAT CONVERTER (MOV/AVI/MKV/WEBM → MP4) -->
-        <div class="box">
-          <div style="font-weight:900; margin-bottom:10px;">Video format converter</div>
+          <div class="box">
+            <div class="box-title">Shorts → YouTube (9:16 → 16:9)</div>
 
-          <label style="padding:0; gap:10px; align-items:center;">
-            <input type="checkbox" name="format_convert" value="1">
-            Convert uploaded video to MP4 (recommended for MOV/AVI/MKV/WEBM)
-          </label>
+            <label>
+              <input type="radio" name="mode" value="blur" checked>
+              <span><b>Blur background</b> (recommended)</span>
+            </label>
 
-          <div style="margin-top:10px;">
-            <select class="select" name="input_format">
-              <option value="" selected>Auto-detect format</option>
-              <option value="mov">MOV</option>
-              <option value="mp4">MP4</option>
-              <option value="mkv">MKV</option>
-              <option value="avi">AVI</option>
-              <option value="webm">WEBM</option>
-              <option value="m4v">M4V</option>
-            </select>
+            <label>
+              <input type="radio" name="mode" value="fitzoom">
+              <span><b>Fit + slight zoom</b> (minimal crop)</span>
+            </label>
+
+            <label>
+              <input type="radio" name="mode" value="crop">
+              <span><b>Crop to fill</b> (no blur, full 16:9)</span>
+            </label>
+
+            <div class="hint">
+              Tip: Blur keeps the full Short visible inside a clean 16:9 frame.
+            </div>
           </div>
 
-          <div class="hint">
-            If your file won’t upload or convert, choose the correct format here. Otherwise keep <b>Auto-detect</b>.
-          </div>
-        </div>
-        <!-- ✅ END NEW SECTION -->
+          <button class="btn-primary" type="submit">Convert & Download</button>
+        </form>
+      </div>
 
-        <button class="btn-primary" type="submit">Convert & Download</button>
-      </form>
+      <!-- Panel 2: YouTube -> Shorts -->
+      <div class="panel" id="p2">
+        <form method="post" action="/convert_shorts" enctype="multipart/form-data">
+          <input class="file" type="file" name="video" accept="video/*" required>
+
+          <div class="box">
+            <div class="box-title">YouTube → Shorts (16:9 → 9:16)</div>
+
+            <label>
+              <input type="radio" name="mode" value="blur" checked>
+              <span><b>Blur background</b> (keeps whole video)</span>
+            </label>
+
+            <label>
+              <input type="radio" name="mode" value="fit">
+              <span><b>Fit</b> (black/blur-free padding if needed)</span>
+            </label>
+
+            <label>
+              <input type="radio" name="mode" value="crop">
+              <span><b>Crop to fill</b> (best for Shorts, but cuts sides)</span>
+            </label>
+
+            <div class="hint">
+              Tip: Crop is the most “real Shorts” look. Blur keeps everything visible.
+            </div>
+          </div>
+
+          <button class="btn-primary" type="submit">Convert & Download</button>
+        </form>
+      </div>
+
+      <!-- Panel 3: Any video -> MP4 -->
+      <div class="panel" id="p3">
+        <form method="post" action="/format_convert" enctype="multipart/form-data">
+          <input class="file" type="file" name="video" accept="video/*" required>
+
+          <div class="box">
+            <div class="box-title">Video → MP4</div>
+
+            <label>
+              <input type="radio" name="format" value="mp4" checked>
+              <span><b>Convert to MP4</b> (MOV, MKV, AVI, WebM → MP4)</span>
+            </label>
+
+            <div class="hint">
+              Tip: This converts the container to MP4 with H.264 video + AAC audio (most compatible).
+            </div>
+          </div>
+
+          <button class="btn-primary" type="submit">Convert & Download</button>
+        </form>
+      </div>
+
     </div>
   </div>
 
   <footer>
     © <span id="yr"></span> Shorts to YouTube Converter •
-    <a href="https://paypal.me/shortstoyoutube" target="_blank">Support</a>
+    <a href="https://paypal.me/shortstoyoutube" target="_blank" rel="noopener">Support</a>
   </footer>
 
 </div>
 
 <script>
   document.getElementById("yr").textContent = new Date().getFullYear();
+
+  // Simple tabs
+  const btns = document.querySelectorAll(".tab-btn");
+  const panels = document.querySelectorAll(".panel");
+  btns.forEach(b=>{
+    b.addEventListener("click", ()=>{
+      btns.forEach(x=>x.classList.remove("active"));
+      panels.forEach(p=>p.classList.remove("active"));
+      b.classList.add("active");
+      const id = b.getAttribute("data-tab");
+      document.getElementById(id).classList.add("active");
+      if (typeof gtag === "function") gtag("event", "tab_click", {tab:id});
+    });
+  });
 </script>
 </body>
 </html>
