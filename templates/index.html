@@ -257,6 +257,25 @@
       font-size:12px;
       color:var(--muted);
     }
+
+    /* ===== NEW: format select ===== */
+    .select{
+      width:100%;
+      padding:12px 12px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:#fff;
+      font-weight:700;
+      color:var(--text);
+      outline:none;
+    }
+
+    .hint{
+      margin-top:10px;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.4;
+    }
   </style>
 </head>
 
@@ -313,9 +332,36 @@
         <input class="file" type="file" name="video" required>
 
         <div class="box">
-          <label><input type="radio" name="direction" checked> Shorts → YouTube</label>
-          <label><input type="radio" name="direction"> YouTube → Shorts</label>
+          <label><input type="radio" name="direction" value="shorts_to_youtube" checked> Shorts → YouTube</label>
+          <label><input type="radio" name="direction" value="youtube_to_shorts"> YouTube → Shorts</label>
         </div>
+
+        <!-- ✅ NEW SECTION: VIDEO FORMAT CONVERTER (MOV/AVI/MKV/WEBM → MP4) -->
+        <div class="box">
+          <div style="font-weight:900; margin-bottom:10px;">Video format converter</div>
+
+          <label style="padding:0; gap:10px; align-items:center;">
+            <input type="checkbox" name="format_convert" value="1">
+            Convert uploaded video to MP4 (recommended for MOV/AVI/MKV/WEBM)
+          </label>
+
+          <div style="margin-top:10px;">
+            <select class="select" name="input_format">
+              <option value="" selected>Auto-detect format</option>
+              <option value="mov">MOV</option>
+              <option value="mp4">MP4</option>
+              <option value="mkv">MKV</option>
+              <option value="avi">AVI</option>
+              <option value="webm">WEBM</option>
+              <option value="m4v">M4V</option>
+            </select>
+          </div>
+
+          <div class="hint">
+            If your file won’t upload or convert, choose the correct format here. Otherwise keep <b>Auto-detect</b>.
+          </div>
+        </div>
+        <!-- ✅ END NEW SECTION -->
 
         <button class="btn-primary" type="submit">Convert & Download</button>
       </form>
