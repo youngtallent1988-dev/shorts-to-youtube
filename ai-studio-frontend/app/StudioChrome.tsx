@@ -2,8 +2,7 @@
 
 import React, { createContext, type ReactNode, useEffect, useMemo, useState, useContext } from "react";
 import { usePathname, useRouter } from "next/navigation";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "https://sailorai.app";
+import { API_BASE } from "@/lib/apiBase";
 
 // --- User context so pages can refresh credits without duplicating logic ---
 
@@ -44,6 +43,20 @@ const navItems = [
   { label: "Subscribe", href: "/pricing" },
   { label: "Mini Apps", href: "/mini-apps" },
 ] as const;
+
+// Map sidebar nav labels to their icons in a type-safe way so that
+// TypeScript will catch any future mismatches between labels and
+// comparisons. This also avoids hard-coding string literals like
+// "Creation" that aren't part of the navItems union.
+type NavLabel = (typeof navItems)[number]["label"];
+const NAV_ICONS: Record<NavLabel, string> = {
+  Home: "⌂",
+  Create: "✦",
+  "Edit Videos": "◎",
+  Posted: "↑",
+  Subscribe: "★",
+  "Mini Apps": "◎",
+};
 
 export default function StudioChrome({ children }: { children: ReactNode }) {
   const router = useRouter();
@@ -153,16 +166,7 @@ export default function StudioChrome({ children }: { children: ReactNode }) {
             <nav className="flex-1 flex flex-col items-center gap-2 mt-1">
               {navItems.map((item) => {
                 const isActive = pathname === item.href;
-                const icon =
-                  item.label === "Home"
-                    ? "⌂"
-                    : item.label === "Creation"
-                      ? "✦"
-                      : item.label === "Posted"
-                        ? "↑"
-                        : item.label === "Subscribe"
-                          ? "★"
-                          : "◎";
+                const icon = NAV_ICONS[item.label] ?? "◎";
 
                 return (
                   <button
