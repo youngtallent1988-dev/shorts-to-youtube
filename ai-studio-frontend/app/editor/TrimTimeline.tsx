@@ -42,24 +42,29 @@ export const TrimTimeline: React.FC<TrimTimelineProps> = ({
   useEffect(() => {
     if (!drag) return;
 
+    // Take a snapshot of the current drag state so TypeScript knows it
+    // cannot be null inside our event handlers and we don't accidentally
+    // read a changed value mid-drag.
+    const currentDrag = drag;
+
     function handleMouseMove(e: MouseEvent) {
       if (!trackRef.current) return;
       const rect = trackRef.current.getBoundingClientRect();
       const trackWidth = rect.width || width;
 
-      const dx = e.clientX - drag.startX;
+      const dx = e.clientX - currentDrag.startX;
       const safeDuration = duration || 1;
       const secondsPerPixel = safeDuration / trackWidth;
       const deltaSeconds = dx * secondsPerPixel;
 
-      let newStart = drag.startStart;
-      let newEnd = drag.startEnd;
+      let newStart = currentDrag.startStart;
+      let newEnd = currentDrag.startEnd;
 
-      if (drag.side === "start") {
-        newStart = drag.startStart + deltaSeconds;
+      if (currentDrag.side === "start") {
+        newStart = currentDrag.startStart + deltaSeconds;
         newStart = Math.max(0, Math.min(newStart, newEnd - minSegment));
       } else {
-        newEnd = drag.startEnd + deltaSeconds;
+        newEnd = currentDrag.startEnd + deltaSeconds;
         newEnd = Math.min(safeDuration, Math.max(newEnd, newStart + minSegment));
       }
 
