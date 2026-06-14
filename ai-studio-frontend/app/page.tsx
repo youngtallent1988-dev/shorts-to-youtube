@@ -1,12 +1,20 @@
 "use client";
 
-import { useEffect, useRef, useState, type ChangeEvent } from "react";
+import { Suspense, useEffect, useRef, useState, type ChangeEvent } from "react";
 import { motion, useReducedMotion, type Variants, AnimatePresence } from "framer-motion";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { API_BASE } from "../lib/apiBase";
 import { useUserContext } from "./StudioChrome";
 
 export default function Home() {
+  return (
+    <Suspense>
+      <HomeContent />
+    </Suspense>
+  );
+}
+
+function HomeContent() {
 
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
