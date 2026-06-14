@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { motion, useReducedMotion, type Variants, AnimatePresence } from "framer-motion";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { API_BASE } from "../lib/apiBase";
 import { useUserContext } from "./StudioChrome";
 
 export default function Home() {
@@ -99,8 +100,7 @@ export default function Home() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-    const { refreshUser } = useUserContext();
-  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "https://sailorai.app";
+  const { refreshUser } = useUserContext();
   const cinematicEase = [0.16, 1, 0.3, 1] as const;
 
 

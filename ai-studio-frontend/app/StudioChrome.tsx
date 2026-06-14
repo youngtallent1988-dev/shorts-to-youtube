@@ -2,7 +2,7 @@
 
 import React, { createContext, type ReactNode, useEffect, useMemo, useState, useContext } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { API_BASE } from "@/lib/apiBase";
+import { API_BASE } from "../lib/apiBase";
 
 // --- User context so pages can refresh credits without duplicating logic ---
 

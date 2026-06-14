@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { TrimTimeline } from "../../components/TrimTimeline";
 import CanvaSidebar from "../../components/CanvaSidebar";
+import { API_BASE } from "../../lib/apiBase";
 
 type AssetType = "video" | "image" | "audio";
 type ExportFormat = "mp4" | "mp3" | "wav" | "jpeg" | "png";
@@ -127,10 +128,6 @@ export default function EditorPage() {
   // Download/export menu state
   const [downloadFormat, setDownloadFormat] = useState<"mp4" | "mp3" | "wav" | "png" | "jpeg">("mp4");
   const [downloadScope, setDownloadScope] = useState<"single" | "all">("single");
-
-  // Base URL for the Flask backend. If NEXT_PUBLIC_API_BASE is not set
-  // or is an empty string, fall back to the live Sailor AI production API.
-  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "https://sailorai.app";
 
   const [assetType, setAssetType] = useState<AssetType>("video");
   const [assets, setAssets] = useState<MediaAsset[]>([]);
@@ -3137,7 +3134,8 @@ export default function EditorPage() {
         <div className="relative z-40">
           <CanvaSidebar
             assets={assets}
-            setAssets={setAssets}
+            // Cast to satisfy the sidebar's narrower MediaAsset type.
+            setAssets={setAssets as any}
             assetsLoading={assetsLoading}
             assetsError={assetsError}
             assetType={assetType}

@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { API_BASE } from "../../../lib/apiBase";
 
 // Base URL for the Flask backend. Match the editor page behavior so that
 // both client-side and route handlers talk to the same server when
-// NEXT_PUBLIC_API_BASE is not explicitly configured.
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "https://sailorai.app";
+// NEXT_PUBLIC_API_BASE / NEXT_PUBLIC_API_URL are not explicitly configured.
 
 export async function POST(req: NextRequest) {
   try {

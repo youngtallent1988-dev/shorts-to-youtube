@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { TrimTimeline } from "../../components/TrimTimeline";
+import { API_BASE } from "../../lib/apiBase";
 
 type AssetType = "video" | "image" | "audio";
 type ExportFormat = "mp4" | "mp3" | "wav" | "jpeg" | "png";
@@ -88,10 +89,6 @@ export default function EditorPage() {
   const [exportFormat, setExportFormat] = useState<ExportFormat>("mp4");
   const [downloadAllClips, setDownloadAllClips] = useState(false);
   const [activeView, setActiveView] = useState<"editor" | "trash">("editor");
-
-  // Base URL for the Flask backend. If NEXT_PUBLIC_API_BASE is not set
-  // or is an empty string, fall back to the live Sailor AI production API.
-  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "https://sailorai.app";
 
   const [assetType, setAssetType] = useState<AssetType>("video");
   const [assets, setAssets] = useState<MediaAsset[]>([]);

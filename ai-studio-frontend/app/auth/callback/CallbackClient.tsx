@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { API_BASE } from "../../../lib/apiBase";
 
 export default function CallbackClient() {
 
   const router = useRouter();
   const params = useSearchParams();
   const [status, setStatus] = useState("Signing you in...");
-  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "https://sailorai.app";
 
   useEffect(() => {
 

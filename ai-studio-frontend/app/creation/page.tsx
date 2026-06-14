@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, type ChangeEvent } from "react";
 import { motion, useReducedMotion, type Variants, AnimatePresence } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
 import { Clapperboard, Sparkles, Wand2, Film, Star, Image as ImageIcon } from "lucide-react";
+import { API_BASE } from "../../lib/apiBase";
 
 type Mode = "video" | "image" | "miniapp" | "saved";
 type ViewMode = "grid" | "list";
@@ -95,8 +96,6 @@ type GenerationStage =
   | "finalizing"
   | "completed"
   | "error";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "https://sailorai.app";
 
 function getTimeAgoLabel(createdAt: number): string {
   const diffMs = Date.now() - createdAt;
@@ -307,8 +306,10 @@ export default function CreationPage() {
     setReferenceName(null);
   }
 
-  async function handleCreate() {
-    if (!prompt.trim()) {
+  async function handleCreate(initialPrompt?: string) {
+    const effectivePrompt = (initialPrompt ?? prompt).trim();
+
+    if (!effectivePrompt) {
       setPromptError("Describe what you want to generate.");
       setCreateStatus(null);
       return;
@@ -325,7 +326,7 @@ export default function CreationPage() {
 
     try {
       // Special path for Runway veo3.1 text-to-video using Next.js API route
-      if (model === "Veo 3.1") {
+      if (modelKey === "Veo-3.1-Lite") {
         const ratio = aspect === "16:9" ? "1280:720" : aspect === "9:16" ? "720:1280" : "1024:1024";
         const runwayResponse = await fetch("/api/runway/text-to-video", {
           method: "POST",
@@ -333,7 +334,7 @@ export default function CreationPage() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            promptText: prompt,
+            promptText: effectivePrompt,
             ratio,
             duration: duration === "5s" ? 5 : duration === "10s" ? 10 : 20,
           }),
@@ -379,14 +380,14 @@ export default function CreationPage() {
 
         const newItem: GalleryItem = {
           id: Date.now(),
-          title: prompt || "Cinematic AI video (Veo 3.1)",
+          title: effectivePrompt || "Cinematic AI video (Veo 3.1)",
           type: "video",
           model,
           createdAt: Date.now(),
           source: "created",
           thumb: videoUrl,
           videoUrl,
-          prompt,
+          prompt: effectivePrompt,
         };
 
         setItems((prev) => [newItem, ...prev]);
@@ -400,7 +401,7 @@ export default function CreationPage() {
 
       // Default path: existing Minimax / Replicate flow via Flask API
       const payload: Record<string, unknown> = {
-        prompt,
+        prompt: effectivePrompt,
         resolution,
         aspect,
         duration,
@@ -437,7 +438,7 @@ export default function CreationPage() {
       }
 
       const { jobId } = data as { jobId: string };
-      setGeneratedPrompt(prompt);
+      setGeneratedPrompt(effectivePrompt);
 
       let done = false;
 
@@ -483,14 +484,14 @@ export default function CreationPage() {
 
               const newItem: GalleryItem = {
                 id: Date.now(),
-                title: prompt || "Cinematic AI video",
+                title: effectivePrompt || "Cinematic AI video",
                 type: "video",
                 model,
                 createdAt: Date.now(),
                 source: "created",
                 thumb: videoUrl,
                 videoUrl,
-                prompt,
+                prompt: effectivePrompt,
               };
 
               setItems((prev) => [newItem, ...prev]);
@@ -1427,7 +1428,7 @@ export default function CreationPage() {
               <motion.button
                 type="button"
                 disabled={creating}
-                onClick={handleCreate}
+                onClick={() => void handleCreate()}
                 whileHover={
                   shouldReduceMotion
                     ? undefined

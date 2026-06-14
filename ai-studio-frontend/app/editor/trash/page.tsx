@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { API_BASE } from "../../../lib/apiBase";
 
 type AssetType = "video" | "image" | "audio";
 
@@ -44,10 +45,6 @@ function TrashIcon(props: React.SVGProps<SVGSVGElement>) {
 
 export default function TrashPage() {
   const router = useRouter();
-  // Base URL for the Flask backend. Match the editor page behavior so
-  // both screens talk to the same API and fall back to the Sailor AI
-  // production API if NEXT_PUBLIC_API_BASE is not set or is an empty string.
-  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "https://sailorai.app";
 
   const [assets, setAssets] = useState<MediaAsset[]>([]);
   const [loading, setLoading] = useState(false);

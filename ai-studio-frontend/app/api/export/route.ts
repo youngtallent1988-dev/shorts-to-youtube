@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { API_BASE } from "../../../lib/apiBase";
 
 // Export API that bridges the Next.js app to the Flask backend.
 // Uses your existing Flask routes:
 //  - POST /api/export-audio  (video_url -> MP3)
 //  - POST /api/export-frame  (video_url -> JPEG)
 // and returns a downloadUrl the frontend can use.
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "https://sailorai.app";
 
 export async function POST(req: NextRequest) {
   try {

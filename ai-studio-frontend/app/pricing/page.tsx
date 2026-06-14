@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
+import { API_BASE } from "../../lib/apiBase";
 
 type Billing = "monthly" | "yearly";
 
@@ -304,8 +305,6 @@ export default function PricingPage() {
   const router = useRouter();
   const pathname = usePathname();
   const shouldReduceMotion = useReducedMotion();
-
-  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "https://sailorai.app";
 
   const [billing, setBilling] = useState<Billing>("monthly");
   const [checkoutPlan, setCheckoutPlan] = useState<Plan["id"] | null>(null);
