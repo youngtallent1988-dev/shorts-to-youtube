@@ -2,6 +2,7 @@
 
 import React, { createContext, type ReactNode, useEffect, useMemo, useState, useContext } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import StudioChromeErrorBoundary from "./StudioChromeErrorBoundary";
 import { API_BASE } from "../lib/apiBase";
 
 // --- User context so pages can refresh credits without duplicating logic ---
@@ -155,6 +156,7 @@ export default function StudioChrome({ children }: { children: ReactNode }) {
   );
 
   return (
+    <StudioChromeErrorBoundary>
     <UserContext.Provider value={userContextValue}>
       <div className="min-h-screen flex bg-[#020617] text-white">
         {/* SIDEBAR */}
@@ -391,5 +393,6 @@ export default function StudioChrome({ children }: { children: ReactNode }) {
         </div>
       </div>
     </UserContext.Provider>
+    </StudioChromeErrorBoundary>
   );
 }
