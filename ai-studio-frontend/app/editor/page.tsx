@@ -4298,7 +4298,6 @@ export default function EditorPage() {
                       }))}
                       setClips={setClips}
                       isPlaying={isTimelinePlaying}
-                      setIsTimelinePlaying={setIsTimelinePlaying}
                       videoRef={videoRef}
                       zoomLevel={zoomLevel}
                       setZoomLevel={setZoomLevel}
