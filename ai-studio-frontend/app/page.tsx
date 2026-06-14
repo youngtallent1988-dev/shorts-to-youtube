@@ -5,12 +5,15 @@ import { motion, useReducedMotion, type Variants, AnimatePresence } from "framer
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { API_BASE } from "../lib/apiBase";
 import { useUserContext } from "./StudioChrome";
+import ErrorBoundary from "../components/ErrorBoundary";
 
 export default function Home() {
   return (
-    <Suspense>
-      <HomeContent />
-    </Suspense>
+    <ErrorBoundary>
+      <Suspense>
+        <HomeContent />
+      </Suspense>
+    </ErrorBoundary>
   );
 }
 
