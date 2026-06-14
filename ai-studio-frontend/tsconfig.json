@@ -22,6 +22,10 @@
         "name": "next"
       }
     ],
+    // Enable module path aliases like "@/lib/*" to resolve from the
+    // project root ("."). This ensures Webpack and TypeScript both
+    // understand that "@/*" maps to files under the app root.
+    "baseUrl": ".",
     "paths": {
       "@/*": [
         "./*"
