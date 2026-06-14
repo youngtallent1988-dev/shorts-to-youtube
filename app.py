@@ -87,14 +87,18 @@ RESEND_FROM = os.getenv("RESEND_FROM", "AI Studio <onboarding@resend.dev>")
 APP_BASE_URL = os.getenv("APP_BASE_URL", "https://sailorai.app")
 
 # Stripe
-STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "mock_key")
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 
 # Initialize Stripe with a safe env-based fallback so missing dashboard
 # variables do not cause initialization errors. In production you should
 # set STRIPE_SECRET_KEY in Railway; otherwise this uses a mock key.
 if stripe is not None:
-    stripe.api_key = os.environ.get("STRIPE_SECRET_KEY", "mock_secret_key_fallback")
+    try:
+        stripe.api_key = os.environ.get("STRIPE_SECRET_KEY", "mock_secret_key_fallback")
+    except Exception as e:  # noqa: BLE001 - keep app booting even if Stripe init fails
+        app.logger.warning("Stripe initialization failed during startup: %s", e)
+        stripe = None
 
 STRIPE_PRICE_CREATOR_MONTHLY = os.getenv("STRIPE_PRICE_CREATOR_MONTHLY")
 STRIPE_PRICE_CREATOR_YEARLY = os.getenv("STRIPE_PRICE_CREATOR_YEARLY")
@@ -2300,6 +2304,9 @@ def format_convert():
 
 
 if __name__ == "__main__":
+    # Local/dev entrypoint. Railway and other production environments should
+    # run this app via gunicorn (e.g. `gunicorn app:app`) and will inject the
+    # PORT environment variable dynamically.
     init_db()
-    # Run on port 5000 to match the frontend's API_BASE fallback
-    app.run(debug=True, port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
