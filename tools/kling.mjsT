@@ -1,0 +1,24 @@
+import { writeFile } from "fs/promises";
+import Replicate from "replicate";
+const replicate = new Replicate();
+
+const input = {
+    prompt: "A Wes Anderson style movie trailer with symmetrical framing and pastel colors. Opening: a perfectly centered shot of a grand pink hotel facade with teal shutters. A bellboy in a pillbox hat pushes a luggage cart precisely down the center of a hallway. Quick lateral tracking shots: a mustachioed concierge stamps a passport, twin sisters in matching yellow dresses ride a tandem bicycle through a village square, a detective examines a painting through a magnifying glass while standing in an absurdly tiny elevator. Every shot is perfectly balanced and color-coordinated in pastels. Final symmetrical shot of the entire cast standing in a row on the hotel steps. Text in a vintage serif font: \"KLING V3 OMNI VIDEO\" then \"NOW ON REPLICATE\". Whimsical harpsichord music, the sound of a bell ding.",
+    duration: 15,
+    generate_audio: true
+};
+
+const output = await replicate.run("kwaivgi/kling-v3-omni-video", { input });
+
+// To access the file URL:
+console.log(output.url());
+//=> "https://replicate.delivery/.../output.mp4"
+
+// To write the file to disk:
+await writeFile("output.mp4", o
+
+
+
+utput);
+//=> output.mp4 written to disk
+

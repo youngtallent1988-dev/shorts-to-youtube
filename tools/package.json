@@ -1,0 +1,22 @@
+{
+  "name": "tools",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "minimax": "node minimax.mjs",
+    "kling": "node kling.mjs",
+    "veo": "node veo.mjs",
+    "runway": "node runway-text-to-video.mjs",
+    "api-generate-video": "node api-generate-video.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "replicate": "^1.4.0",
+    "@runwayml/sdk": "^3.21.0"
+  }
+}

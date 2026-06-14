@@ -6,3 +6,6 @@ Jinja2==3.1.6
 MarkupSafe==3.0.3
 Werkzeug==3.1.4
 gunicorn
+requests==2.32.4
+charset-normalizer==3.4.3
+stripe==10.12.0

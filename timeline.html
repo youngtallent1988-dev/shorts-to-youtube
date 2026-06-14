@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Timeline Trim Demo</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: radial-gradient(circle at top, #020617, #000);
+      color: #e5e7eb;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .panel {
+      padding: 24px;
+      border-radius: 16px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      width: 520px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+    .timeline-track {
+      position: relative;
+      height: 32px;
+      border-radius: 16px;
+      background: linear-gradient(90deg, #111827, #020617);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      overflow: hidden;
+    }
+    .timeline-full {
+      position: absolute;
+      inset: 4px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(75, 85, 99, 0.7), rgba(31, 41, 55, 0.6));
+    }
+    .timeline-selected {
+      position: absolute;
+      top: 4px;
+      bottom: 4px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(56, 189, 248, 0.5), rgba(59, 130, 246, 0.6));
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+    }
+    .handle {
+      position: absolute;
+      top: 2px;
+      bottom: 2px;
+      width: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: ew-resize;
+    }
+    .handle-bar {
+      width: 3px;
+      border-radius: 999px;
+      height: 70%;
+      background: rgba(248, 250, 252, 0.95);
+      box-shadow: 0 0 4px rgba(15, 23, 42, 0.8);
+    }
+    pre {
+      margin-top: 12px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: #020617;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      font-size: 11px;
+      overflow-x: auto;
+    }
+    .hint {
+      margin-top: 8px;
+      font-size: 11px;
+      color: #9ca3af;
+    }
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <div class="header">
+      <span>Canva-like trim demo (HTML/JS)</span>
+      <span id="label"></span>
+    </div>
+
+    <!-- Simple demo video controlled by the timeline below -->
+    <video
+      id="demoVideo"
+      src="https://www.w3schools.com/html/mov_bbb.mp4"
+      controls
+      style="width: 100%; border-radius: 10px; margin-bottom: 10px;"
+    ></video>
+
+    <div id="track" class="timeline-track">
+      <div class="timeline-full"></div>
+      <div id="selected" class="timeline-selected"></div>
+      <div id="handle-start" class="handle">
+        <div class="handle-bar"></div>
+      </div>
+      <div id="handle-end" class="handle">
+        <div class="handle-bar"></div>
+      </div>
+    </div>
+
+    <pre id="state"></pre>
+    <button
+      id="playTrimmedBtn"
+      style="
+        margin-top: 10px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(248,250,252,0.3);
+        background: transparent;
+        color: #e5e7eb;
+        font-size: 11px;
+        cursor: pointer;
+      "
+    >
+      ▶ Play trimmed segment
+    </button>
+
+    <div class="hint">
+      Drag the left or right edge to trim or extend. Values are non-destructive
+      and always stay within [0, duration]. The button above will play only the
+      selected segment on the video.
+    </div>
+  </div>
+
+  <script>
+    // Dummy clip state (these values control the video segment too)
+    const clip = {
+      duration: 18, // seconds
+      startTime: 3,
+      endTime: 14,
+    };
+
+    const track = document.getElementById("track");
+    const selected = document.getElementById("selected");
+    const handleStart = document.getElementById("handle-start");
+    const handleEnd = document.getElementById("handle-end");
+    const label = document.getElementById("label");
+    const statePre = document.getElementById("state");
+    const videoEl = document.getElementById("demoVideo");
+    const playTrimmedBtn = document.getElementById("playTrimmedBtn");
+
+    let drag = null; // { side: 'start'|'end', startX, startStartTime, startEndTime }
+
+    function formatTime(t) {
+      const s = Math.max(0, Math.floor(t));
+      const m = Math.floor(s / 60);
+      const ss = String(s % 60).padStart(2, "0");
+      return `${m}:${ss}`;
+    }
+
+    function render() {
+      const safeDuration = clip.duration || 1;
+      const startPct = (clip.startTime / safeDuration) * 100;
+      const endPct = (clip.endTime / safeDuration) * 100;
+      const widthPct = Math.max(0, endPct - startPct);
+
+      selected.style.left = startPct + "%";
+      selected.style.width = widthPct + "%";
+
+      handleStart.style.left = `calc(${startPct}% - 6px)`;
+      handleEnd.style.left = `calc(${endPct}% - 6px)`;
+
+      label.textContent = `${formatTime(clip.startTime)} – ${formatTime(
+        clip.endTime,
+      )} / ${formatTime(clip.duration)}`;
+
+      statePre.textContent = JSON.stringify(clip, null, 2);
+    }
+
+    function onHandleMouseDown(side, event) {
+      event.preventDefault();
+      drag = {
+        side,
+        startX: event.clientX,
+        startStartTime: clip.startTime,
+        startEndTime: clip.endTime,
+      };
+    }
+
+    function onMouseMove(event) {
+      if (!drag) return;
+      const rect = track.getBoundingClientRect();
+      const trackWidth = rect.width || 1;
+
+      const dx = event.clientX - drag.startX;
+      const secondsPerPixel = clip.duration / trackWidth;
+      const deltaSeconds = dx * secondsPerPixel;
+      const minSegment = 0.2;
+
+      let newStart = drag.startStartTime;
+      let newEnd = drag.startEndTime;
+
+      if (drag.side === "start") {
+        newStart = drag.startStartTime + deltaSeconds;
+        newStart = Math.max(0, Math.min(newStart, newEnd - minSegment));
+      } else {
+        newEnd = drag.startEndTime + deltaSeconds;
+        newEnd = Math.min(
+          clip.duration,
+          Math.max(newEnd, newStart + minSegment),
+        );
+      }
+
+      clip.startTime = newStart;
+      clip.endTime = newEnd;
+      render();
+    }
+
+    function onMouseUp() {
+      drag = null;
+    }
+
+    function playTrimmed() {
+      if (!videoEl) return;
+      // Map trimmed times directly to video currentTime
+      const start = clip.startTime;
+      const end = clip.endTime;
+
+      videoEl.currentTime = start;
+      videoEl.play();
+
+      const onTimeUpdate = () => {
+        if (videoEl.currentTime >= end) {
+          videoEl.pause();
+          videoEl.removeEventListener("timeupdate", onTimeUpdate);
+        }
+      };
+
+      videoEl.addEventListener("timeupdate", onTimeUpdate);
+    }
+
+    handleStart.addEventListener("mousedown", (e) => onHandleMouseDown("start", e));
+    handleEnd.addEventListener("mousedown", (e) => onHandleMouseDown("end", e));
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
+    playTrimmedBtn.addEventListener("click", playTrimmed);
+
+    render();
+  </script>
+</body>
+</html>

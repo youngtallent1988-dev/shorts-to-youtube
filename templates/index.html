@@ -1,466 +1,684 @@
+Replace your entire templates/index.html file with the following code:
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NVL9FN7HE3"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-NVL9FN7HE3');
-  </script>
 
-  <meta charset="UTF-8" />
-  <meta name="description" content="Free online video converter. Convert YouTube Shorts to 16:9, YouTube videos to Shorts, and any video to MP4. Fast, private, no watermark." />
-  <title>Free Video Converter | Shorts to YouTube & MP4 Online</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
+<title>Shorts to YouTube + AI Video Generator</title>
 
-  <style>
-    :root{
-      --bg:#F8FAFC;
-      --bg2:#EEF2FF;
-      --card:#FFFFFF;
-      --text:#0F172A;
-      --muted:#475569;
-      --line: rgba(15,23,42,0.10);
-      --accent:#3B82F6;
-      --coffee:#F59E0B;
-      --shadow:0 18px 50px rgba(15,23,42,.10);
-      --tab:#EEF2FF;
-    }
+<style>
 
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background:linear-gradient(180deg,var(--bg),var(--bg2));
-      color:var(--text);
-      padding:26px 16px 64px;
-    }
+:root{
+  --bg:#F8FAFC;
+  --bg2:#EEF2FF;
+  --card:#FFFFFF;
+  --text:#0F172A;
+  --muted:#475569;
+  --line:rgba(15,23,42,.10);
+  --accent:#3B82F6;
+  --shadow:0 18px 50px rgba(15,23,42,.10);
+}
 
-    .wrap{max-width:980px;margin:0 auto}
+*{
+  box-sizing:border-box;
+}
 
-    /* ================= TOPBAR ================= */
-    .topbar{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:14px;
-      padding:12px;
-      border:1px solid var(--line);
-      border-radius:16px;
-      background:#fff;
-      box-shadow:0 10px 30px rgba(0,0,0,.05);
-      margin-bottom:20px;
-    }
+body{
+  margin:0;
+  font-family:system-ui;
+  background:
+  linear-gradient(
+    180deg,
+    var(--bg),
+    var(--bg2)
+  );
+  color:var(--text);
+  padding:30px 16px;
+}
 
-    .brand{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-      min-width:0;
-      flex:1;
-    }
+.wrap{
+  max-width:1000px;
+  margin:auto;
+}
 
-    .brand-title{
-      font-size:15px;
-      font-weight:900;
-      white-space:nowrap;
-      overflow:visible;
-    }
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:#fff;
+  padding:18px;
+  border-radius:18px;
+  box-shadow:var(--shadow);
+  margin-bottom:20px;
+}
 
-    .brand-sub{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      align-items:center;
-      font-size:12px;
-    }
+.top-left{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
 
-    .yt-cta{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      font-weight:900;
-      text-decoration:none;
-      color:var(--accent);
-      white-space:nowrap;
-    }
+.brand{
+  font-size:22px;
+  font-weight:900;
+}
 
-    .yt-play{
-      width:16px;
-      height:12px;
-      background:#ff0000;
-      color:#fff;
-      font-size:9px;
-      font-weight:900;
-      border-radius:4px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
+.nav{
+  display:flex;
+  gap:12px;
+}
 
-    .yt-hint{
-      padding:1px 6px;
-      font-size:10px;
-      font-weight:800;
-      background:rgba(255,0,0,.1);
-      color:#cc0000;
-      border-radius:999px;
-    }
+.nav-link{
+  text-decoration:none;
+  color:var(--text);
+  font-weight:600;
+  padding:6px 12px;
+  border-radius:999px;
+  border:1px solid var(--line);
+}
 
-    .tt-cta{ text-decoration:none; white-space:nowrap; }
+.nav-link:hover{
+  background:#EEF2FF;
+}
 
-    .tt-badge{
-      position:relative;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      height:16px;
-      padding:0 8px;
-      border-radius:999px;
-      background:#000;
-      color:#fff;
-      font-size:10px;
-      font-weight:900;
-      letter-spacing:.2px;
-    }
+.coffee{
+  background:#F59E0B;
+  color:#fff;
+  padding:12px 18px;
+  border-radius:999px;
+  text-decoration:none;
+  font-weight:800;
+}
 
-    .tt-badge::before,
-    .tt-badge::after{
-      content:"TikTok";
-      position:absolute;
-      inset:0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:10px;
-      font-weight:900;
-      border-radius:999px;
-      pointer-events:none;
-      z-index:-1;
-    }
+.grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:20px;
+}
 
-    .tt-badge::before{ color:#25F4EE; transform:translate(-1px,-1px); }
-    .tt-badge::after{ color:#FE2C55; transform:translate(1px,1px); }
+.card{
+  background:#fff;
+  border-radius:20px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
 
-    .top-actions{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
+.card-head{
+  padding:24px 24px 0;
+}
 
-    .pill{
-      padding:10px 12px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:#fff;
-      font-size:13px;
-      font-weight:700;
-      color:var(--muted);
-      text-decoration:none;
-    }
+.card-head h2{
+  margin:0;
+}
 
-    .coffee-btn{
-      padding:10px 14px;
-      border-radius:999px;
-      background:rgba(245,158,11,.15);
-      border:1px solid rgba(245,158,11,.4);
-      font-weight:900;
-      color:#7C4A00;
-      text-decoration:none;
-    }
+.sub{
+  color:var(--muted);
+  margin-top:6px;
+}
 
-    /* ================= MAIN ================= */
-    .grid{
-      display:grid;
-      grid-template-columns:1.05fr .95fr;
-      gap:18px;
-    }
-    @media(max-width:900px){
-      .grid{grid-template-columns:1fr}
-    }
+.content{
+  padding:24px;
+}
 
-    .hero{
-      background:#fff;
-      border-radius:18px;
-      padding:24px;
-      box-shadow:var(--shadow);
-    }
+textarea{
+  width:100%;
+  height:140px;
+  border-radius:16px;
+  border:1px solid var(--line);
+  padding:16px;
+  font-size:15px;
+  resize:none;
+}
 
-    .hero h1{margin:0 0 10px;font-size:28px}
-    .hero p{margin:0;color:var(--muted)}
+.file{
+  width:100%;
+  padding:14px;
+  border-radius:14px;
+  border:1px dashed var(--line);
+}
 
-    .card{
-      background:#fff;
-      border-radius:18px;
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
+.box{
+  margin-top:16px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:16px;
+}
 
-    .card-head{padding:18px 18px 0}
-    .card-head h2{margin:0}
-    .card-head .sub{color:var(--muted);font-size:13px;margin-top:6px}
+.box-title{
+  font-weight:900;
+  margin-bottom:12px;
+}
 
-    .tabs{
-      display:flex;
-      gap:8px;
-      padding:12px 18px 0;
-      flex-wrap:wrap;
-    }
-    .tab-btn{
-      border:1px solid var(--line);
-      background:#fff;
-      padding:10px 12px;
-      border-radius:999px;
-      font-weight:800;
-      font-size:13px;
-      cursor:pointer;
-      color:var(--muted);
-    }
-    .tab-btn.active{
-      background:var(--tab);
-      color:var(--text);
-      border-color:rgba(59,130,246,.35);
-    }
+label{
+  display:flex;
+  gap:10px;
+  padding:10px;
+  cursor:pointer;
+  border-radius:12px;
+}
 
-    form{padding:18px}
+label:hover{
+  background:#F8FAFC;
+}
 
-    .file{
-      width:100%;
-      padding:14px;
-      border-radius:14px;
-      border:1px dashed var(--line);
-    }
+.btn{
+  width:100%;
+  border:none;
+  background:var(--accent);
+  color:#fff;
+  padding:16px;
+  border-radius:16px;
+  font-size:16px;
+  font-weight:900;
+  cursor:pointer;
+  margin-top:18px;
+}
 
-    .box{
-      margin-top:14px;
-      padding:14px;
-      border-radius:14px;
-      border:1px solid var(--line);
-      background:#fff;
-    }
+.loading{
+  display:none;
+  margin-top:18px;
+  font-weight:800;
+  color:var(--accent);
+}
 
-    .box-title{
-      font-weight:900;
-      font-size:13px;
-      margin-bottom:10px;
-      color:var(--text);
-    }
+video{
+  width:100%;
+  border-radius:18px;
+  margin-top:20px;
+}
 
-    label{
-      display:flex;
-      gap:10px;
-      padding:10px;
-      cursor:pointer;
-      font-size:14px;
-      border-radius:12px;
-    }
-    label:hover{ background:rgba(15,23,42,0.03); }
+.download{
+  display:inline-block;
+  margin-top:16px;
+  background:#10B981;
+  color:#fff;
+  padding:14px 18px;
+  border-radius:14px;
+  text-decoration:none;
+  font-weight:900;
+}
 
-    .btn-primary{
-      margin-top:14px;
-      width:100%;
-      padding:14px;
-      border:none;
-      border-radius:14px;
-      background:var(--accent);
-      color:#fff;
-      font-weight:900;
-      font-size:16px;
-      cursor:pointer;
-    }
+.tabs{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  padding:0 24px 20px;
+}
 
-    .hint{
-      margin-top:10px;
-      font-size:12px;
-      color:var(--muted);
-      line-height:1.4;
-    }
+.tab-btn{
+  border:none;
+  background:#EEF2FF;
+  padding:10px 16px;
+  border-radius:999px;
+  cursor:pointer;
+  font-weight:800;
+}
 
-    footer{
-      margin-top:30px;
-      text-align:center;
-      font-size:12px;
-      color:var(--muted);
-    }
+.tab-btn.active{
+  background:var(--accent);
+  color:#fff;
+}
 
-    .panel{ display:none; }
-    .panel.active{ display:block; }
-  </style>
+.panel{
+  display:none;
+}
+
+.panel.active{
+  display:block;
+}
+
+</style>
 </head>
 
 <body>
+
 <div class="wrap">
 
-  <!-- ===== TOP BAR ===== -->
-  <div class="topbar">
-    <div class="brand">
-      <div class="brand-title">Shorts to YouTube Converter</div>
+<div class="topbar">
 
-      <div class="brand-sub">
-        <a class="yt-cta"
-           href="https://www.youtube.com/@SailorSailorAdventures"
-           target="_blank" rel="noopener">
-          <span class="yt-play">▶</span>
-          SailorSailorAdventures
-          <span class="yt-hint">Watch kids adventures 🎥</span>
-        </a>
+<div class="top-left">
+<div class="brand">
+Sailor AI
+</div>
+<nav class="nav">
+<a href="#home" class="nav-link">Home</a>
+</nav>
+</div>
 
-        <a class="tt-cta"
-           href="https://www.tiktok.com/@sailorsalior"
-           target="_blank" rel="noopener">
-          <span class="tt-badge">TikTok</span>
-        </a>
-      </div>
-    </div>
+<a
+class="coffee"
+href="https://paypal.me/shortstoyoutube"
+target="_blank"
+>
+☕ Support
+</a>
 
-    <div class="top-actions">
-      <a class="coffee-btn"
-         href="https://paypal.me/shortstoyoutube"
-         target="_blank" rel="noopener">☕ Buy me a coffee</a>
+</div>
 
-      <a class="pill"
-         href="https://shortstoyoutube.com"
-         target="_blank" rel="noopener">🔗 shortstoyoutube.com</a>
-    </div>
-  </div>
+<div class="card">
 
-  <!-- ===== CONTENT ===== -->
-  <div class="grid">
-    <div class="hero">
-      <h1>Free Online Video Converter</h1>
-      <p>
-        Convert Shorts ↔ YouTube formats and convert common video formats to MP4.
-      </p>
-    </div>
+<div class="card-head">
+<h2>Video Converter</h2>
+<div class="sub">
+Convert Shorts ↔ YouTube and video to MP4
+</div>
+</div>
 
-    <div class="card">
-      <div class="card-head">
-        <h2>Upload & convert</h2>
-        <div class="sub">Choose a tool tab, upload a file, pick options, then download.</div>
-      </div>
+<div class="tabs">
 
-      <!-- Tabs -->
-      <div class="tabs">
-        <button type="button" class="tab-btn active" data-tab="p1">Shorts → YouTube</button>
-        <button type="button" class="tab-btn" data-tab="p2">YouTube → Shorts</button>
-        <button type="button" class="tab-btn" data-tab="p3">Video → MP4</button>
-      </div>
+<button
+class="tab-btn active"
+data-tab="p1"
+>
+Shorts → YouTube
+</button>
 
-      <!-- Panel 1: Shorts -> YouTube -->
-      <div class="panel active" id="p1">
-        <form method="post" action="/convert" enctype="multipart/form-data">
-          <input class="file" type="file" name="video" accept="video/*" required>
+<button
+class="tab-btn"
+data-tab="p2"
+>
+YouTube → Shorts
+</button>
 
-          <div class="box">
-            <div class="box-title">Shorts → YouTube (9:16 → 16:9)</div>
+<button
+class="tab-btn"
+data-tab="p3"
+>
+Video → MP4
+</button>
 
-            <label>
-              <input type="radio" name="mode" value="blur" checked>
-              <span><b>Blur background</b> (recommended)</span>
-            </label>
+</div>
 
-            <label>
-              <input type="radio" name="mode" value="fitzoom">
-              <span><b>Fit + slight zoom</b> (minimal crop)</span>
-            </label>
+<div class="panel active" id="p1">
 
-            <label>
-              <input type="radio" name="mode" value="crop">
-              <span><b>Crop to fill</b> (no blur, full 16:9)</span>
-            </label>
+<div class="content">
 
-            <div class="hint">
-              Tip: Blur keeps the full Short visible inside a clean 16:9 frame.
-            </div>
-          </div>
+<form
+method="post"
+action="/convert"
+enctype="multipart/form-data"
+>
 
-          <button class="btn-primary" type="submit">Convert & Download</button>
-        </form>
-      </div>
+<input
+class="file"
+type="file"
+name="video"
+accept="video/*"
+required
+>
 
-      <!-- Panel 2: YouTube -> Shorts -->
-      <div class="panel" id="p2">
-        <form method="post" action="/convert_shorts" enctype="multipart/form-data">
-          <input class="file" type="file" name="video" accept="video/*" required>
+<div class="box">
 
-          <div class="box">
-            <div class="box-title">YouTube → Shorts (16:9 → 9:16)</div>
+<div class="box-title">
+Shorts → YouTube
+</div>
 
-            <label>
-              <input type="radio" name="mode" value="blur" checked>
-              <span><b>Blur background</b> (keeps whole video)</span>
-            </label>
+<label>
+<input
+type="radio"
+name="mode"
+value="blur"
+checked
+>
+Blur background
+</label>
 
-            <label>
-              <input type="radio" name="mode" value="fit">
-              <span><b>Fit</b> (black/blur-free padding if needed)</span>
-            </label>
+<label>
+<input
+type="radio"
+name="mode"
+value="crop"
+>
+Crop to fill
+</label>
 
-            <label>
-              <input type="radio" name="mode" value="crop">
-              <span><b>Crop to fill</b> (best for Shorts, but cuts sides)</span>
-            </label>
+</div>
 
-            <div class="hint">
-              Tip: Crop is the most “real Shorts” look. Blur keeps everything visible.
-            </div>
-          </div>
+<button class="btn">
+Convert & Download
+</button>
 
-          <button class="btn-primary" type="submit">Convert & Download</button>
-        </form>
-      </div>
+</form>
 
-      <!-- Panel 3: Any video -> MP4 -->
-      <div class="panel" id="p3">
-        <form method="post" action="/format_convert" enctype="multipart/form-data">
-          <input class="file" type="file" name="video" accept="video/*" required>
+</div>
 
-          <div class="box">
-            <div class="box-title">Video → MP4</div>
+</div>
 
-            <label>
-              <input type="radio" name="format" value="mp4" checked>
-              <span><b>Convert to MP4</b> (MOV, MKV, AVI, WebM → MP4)</span>
-            </label>
+<div class="panel" id="p2">
 
-            <div class="hint">
-              Tip: This converts the container to MP4 with H.264 video + AAC audio (most compatible).
-            </div>
-          </div>
+<div class="content">
 
-          <button class="btn-primary" type="submit">Convert & Download</button>
-        </form>
-      </div>
+<form
+method="post"
+action="/convert_shorts"
+enctype="multipart/form-data"
+>
 
-    </div>
-  </div>
+<input
+class="file"
+type="file"
+name="video"
+accept="video/*"
+required
+>
 
-  <footer>
-    © <span id="yr"></span> Shorts to YouTube Converter •
-    <a href="https://paypal.me/shortstoyoutube" target="_blank" rel="noopener">Support</a>
-  </footer>
+<div class="box">
+
+<div class="box-title">
+YouTube → Shorts
+</div>
+
+<label>
+<input
+type="radio"
+name="mode"
+value="blur"
+checked
+>
+Blur background
+</label>
+
+<label>
+<input
+type="radio"
+name="mode"
+value="crop"
+>
+Crop to fill
+</label>
+
+</div>
+
+<button class="btn">
+Convert & Download
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+<div class="panel" id="p3">
+
+<div class="content">
+
+<form
+method="post"
+action="/format_convert"
+enctype="multipart/form-data"
+>
+
+<input
+class="file"
+type="file"
+name="video"
+accept="video/*"
+required
+>
+
+<div class="box">
+
+<div class="box-title">
+Convert to MP4
+</div>
+
+<label>
+<input
+type="radio"
+checked
+>
+MOV / MKV / AVI / WEBM → MP4
+</label>
+
+</div>
+
+<button class="btn">
+Convert & Download
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-head">
+
+<h2>AI Video Generator</h2>
+
+<div class="sub">
+Generate AI videos directly from prompts
+</div>
+
+</div>
+
+<div class="content">
+
+<textarea
+id="prompt"
+placeholder="Describe your AI video..."
+></textarea>
+
+<div class="box">
+
+<div class="box-title">
+Video Style
+</div>
+
+<label>
+<input
+type="radio"
+name="style"
+value="cinematic"
+checked
+>
+Cinematic
+</label>
+
+<label>
+<input
+type="radio"
+name="style"
+value="3d cartoon"
+>
+3D Cartoon
+</label>
+
+<label>
+<input
+type="radio"
+name="style"
+value="anime"
+>
+Anime
+</label>
+
+</div>
+
+<button
+class="btn"
+onclick="generateVideo()"
+>
+Generate AI Video
+</button>
+
+<div
+class="loading"
+id="loading"
+>
+Generating AI video...
+</div>
+
+<div
+id="videoContainer"
+style="display:none;"
+>
+
+<video
+id="videoPlayer"
+controls
+></video>
+
+<a
+id="downloadBtn"
+class="download"
+download
+>
+Download Video
+</a>
+
+</div>
+
+</div>
+
+</div>
 
 </div>
 
 <script>
-  document.getElementById("yr").textContent = new Date().getFullYear();
 
-  // Simple tabs
-  const btns = document.querySelectorAll(".tab-btn");
-  const panels = document.querySelectorAll(".panel");
-  btns.forEach(b=>{
-    b.addEventListener("click", ()=>{
-      btns.forEach(x=>x.classList.remove("active"));
-      panels.forEach(p=>p.classList.remove("active"));
-      b.classList.add("active");
-      const id = b.getAttribute("data-tab");
-      document.getElementById(id).classList.add("active");
-      if (typeof gtag === "function") gtag("event", "tab_click", {tab:id});
-    });
-  });
+const btns =
+document.querySelectorAll(".tab-btn");
+
+const panels =
+document.querySelectorAll(".panel");
+
+btns.forEach(btn=>{
+
+btn.addEventListener("click",()=>{
+
+btns.forEach(b=>
+b.classList.remove("active")
+);
+
+panels.forEach(p=>
+p.classList.remove("active")
+);
+
+btn.classList.add("active");
+
+document
+.getElementById(
+btn.dataset.tab
+)
+.classList.add("active");
+
+});
+
+});
+
+async function generateVideo(){
+
+const prompt =
+document.getElementById("prompt").value;
+
+const style =
+document.querySelector(
+'input[name="style"]:checked'
+).value;
+
+const loading =
+document.getElementById("loading");
+
+const container =
+document.getElementById("videoContainer");
+
+loading.style.display = "block";
+
+container.style.display = "none";
+
+try{
+
+const response =
+await fetch(
+"/generate-video",
+{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+prompt:`${prompt}, ${style}`
+})
+}
+);
+
+const data =
+await response.json();
+
+console.log(data);
+
+const videoUrl =
+data?.video?.url ||
+data?.videos?.[0]?.url ||
+data?.output?.video?.url;
+
+if(videoUrl){
+
+const player =
+document.getElementById(
+"videoPlayer"
+);
+
+const downloadBtn =
+document.getElementById(
+"downloadBtn"
+);
+
+player.src = videoUrl;
+
+downloadBtn.href =
+videoUrl;
+
+container.style.display =
+"block";
+
+}else{
+
+alert(
+"Video generation failed"
+);
+
+}
+
+}catch(err){
+
+console.error(err);
+
+alert(
+"Something went wrong"
+);
+
+}
+
+loading.style.display =
+"none";
+
+}
+
 </script>
+
 </body>
 </html>
+```
+
+Then save the file and run:
+
+```bash
+python3 app.py
+```
+
+Open:
+
+```text
+http://127.0.0.1:5000
+```

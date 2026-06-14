@@ -1,0 +1,269 @@
+@import "tailwindcss";
+
+:root {
+  /* Default to dark so you don't get a white flash on load */
+  --background: #020617;
+  --foreground: #ededed;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* -------------------------
+   Cinematic look + glow UX
+   ------------------------- */
+
+@keyframes cinematic-grain-pan {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 160% 120%;
+  }
+}
+
+.cinematic-bg {
+  /* Matte cinematic background for the main studio shell */
+  background: #020617;
+}
+
+.glass-panel {
+  background: rgba(0, 0, 0, 0.58);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glow-pill {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  transition:
+    transform 180ms ease,
+    box-shadow 220ms ease,
+    border-color 220ms ease,
+    background 220ms ease;
+}
+
+.glow-pill:hover {
+  transform: translateY(-1px);
+  border-color: rgba(34, 211, 238, 0.45);
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow:
+    0 14px 40px rgba(34, 211, 238, 0.12),
+    0 0 0 1px rgba(34, 211, 238, 0.18);
+}
+
+.glow-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.045);
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease,
+    border-color 220ms ease;
+}
+
+.glow-card::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  pointer-events: none;
+  opacity: 0;
+  filter: blur(18px);
+  transition: opacity 260ms ease;
+  background:
+    radial-gradient(520px circle at 30% 0%, rgba(34, 211, 238, 0.35), transparent 60%),
+    radial-gradient(520px circle at 85% 20%, rgba(236, 72, 153, 0.22), transparent 60%),
+    radial-gradient(640px circle at 50% 110%, rgba(249, 115, 22, 0.18), transparent 58%);
+}
+
+.glow-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(34, 211, 238, 0.32);
+  box-shadow:
+    0 26px 70px rgba(0, 0, 0, 0.65),
+    0 0 0 1px rgba(34, 211, 238, 0.16);
+}
+
+.glow-card:hover::before {
+  opacity: 1;
+}
+
+.glow-primary {
+  background-image: linear-gradient(90deg, #ec4899 0%, #f97316 100%);
+  transition:
+    transform 180ms ease,
+    box-shadow 220ms ease,
+    filter 220ms ease;
+}
+
+.glow-primary:hover {
+  transform: translateY(-1px);
+  filter: saturate(1.1);
+  box-shadow:
+    0 18px 55px rgba(236, 72, 153, 0.22),
+    0 18px 55px rgba(249, 115, 22, 0.16),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.glow-focus:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px rgba(0, 0, 0, 0.8),
+    0 0 0 4px rgba(34, 211, 238, 0.55);
+}
+
+/* -------------------------
+   Pricing page animations
+   ------------------------- */
+
+@keyframes neon-border-pan {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+.animated-gradient {
+  background-size: 200% 200%;
+  animation: neon-border-pan 6s linear infinite;
+}
+
+.pricing-card {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Animated glowing border (PixVerse/Runway vibe) */
+.pricing-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 24px;
+  pointer-events: none;
+  opacity: 0.55;
+  background: linear-gradient(
+    90deg,
+    rgba(34, 211, 238, 0.0),
+    rgba(34, 211, 238, 0.55),
+    rgba(236, 72, 153, 0.55),
+    rgba(249, 115, 22, 0.45),
+    rgba(34, 211, 238, 0.0)
+  );
+  background-size: 240% 100%;
+  filter: blur(0px);
+  animation: neon-border-pan 7s linear infinite;
+}
+
+.pricing-card::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: 23px;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.58);
+}
+
+.pricing-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Subtle particle field */
+.particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.55;
+}
+
+@keyframes particle-float {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.75;
+  }
+  100% {
+    transform: translate3d(0, -18px, 0);
+    opacity: 0.25;
+  }
+}
+
+.particle {
+  position: absolute;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0));
+  filter: blur(0.2px);
+  animation: particle-float 4.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-bg::after {
+    animation: none;
+  }
+
+  .animated-gradient,
+  .pricing-card::before,
+  .particle {
+    animation: none;
+  }
+
+  .glow-pill,
+  .glow-card,
+  .glow-primary {
+    transition: none;
+  }
+
+  .glow-pill:hover,
+  .glow-card:hover,
+  .glow-primary:hover {
+    transform: none;
+  }
+}
+
+/* -------------------------
+   Pricing-specific elements
+   ------------------------- */
+
+.credit-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #22d3ee 0%, #f97316 50%, #ec4899 100%);
+  color: #020617;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.75),
+    0 0 35px rgba(236, 72, 153, 0.45),
+    0 0 28px rgba(34, 211, 238, 0.45);
+}
+
+.credit-badge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  margin-right: 0.4rem;
+  background: radial-gradient(circle at 30% 30%, #fefce8, #facc15);
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.9);
+}
