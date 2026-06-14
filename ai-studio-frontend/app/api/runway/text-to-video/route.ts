@@ -40,7 +40,9 @@ export async function POST(req: NextRequest) {
       .create({
         model: "veo3.1",
         promptText,
-        ratio,
+        // Cast ratio to the SDK's allowed union type. The runtime
+        // value is still validated on Runway's side.
+        ratio: ratio as any,
         duration,
       })
       .waitForTaskOutput();
