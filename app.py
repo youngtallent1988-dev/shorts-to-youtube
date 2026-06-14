@@ -90,12 +90,11 @@ APP_BASE_URL = os.getenv("APP_BASE_URL", "https://sailorai.app")
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 
-if STRIPE_SECRET_KEY and stripe is not None:
-    stripe.api_key = STRIPE_SECRET_KEY
-else:
-    # If Stripe cannot be imported (e.g. due to anyio/TypeVar issues),
-    # disable Stripe features in local dev by clearing the secret key.
-    STRIPE_SECRET_KEY = None
+# Initialize Stripe with a safe env-based fallback so missing dashboard
+# variables do not cause initialization errors. In production you should
+# set STRIPE_SECRET_KEY in Railway; otherwise this uses a mock key.
+if stripe is not None:
+    stripe.api_key = os.environ.get("STRIPE_SECRET_KEY", "mock_secret_key_fallback")
 
 STRIPE_PRICE_CREATOR_MONTHLY = os.getenv("STRIPE_PRICE_CREATOR_MONTHLY")
 STRIPE_PRICE_CREATOR_YEARLY = os.getenv("STRIPE_PRICE_CREATOR_YEARLY")
