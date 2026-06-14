@@ -5,28 +5,9 @@ import React, { useEffect, useRef, useState } from "react";
 import { TrimTimeline } from "../../components/TrimTimeline";
 import CanvaSidebar from "../../components/CanvaSidebar";
 import { API_BASE } from "../../lib/apiBase";
+import type { AssetType, MediaAsset } from "../../lib/mediaTypes";
 
-type AssetType = "video" | "image" | "audio";
 type ExportFormat = "mp4" | "mp3" | "wav" | "jpeg" | "png";
-
-type MediaAsset = {
-  id: string;
-  userId: number;
-  type: AssetType;
-  originalName: string;
-  mimeType: string;
-  sizeBytes: number;
-  storageKey: string;
-  publicUrl: string;
-  status: "active" | "trashed" | "deleted";
-  createdAt: string;
-  updatedAt: string;
-  trashedAt: string | null;
-  deletedAt: string | null;
-  // Optional client-side fields for playback calibration
-  speed?: number; // 0.5x, 1x, 2x, etc.
-  durationSeconds?: number; // audio/video duration when known
-};
 
 type TransitionType = "fade" | "crossfade" | "slide" | "zoom" | "circle";
 

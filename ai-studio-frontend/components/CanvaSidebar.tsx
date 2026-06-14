@@ -1,14 +1,5 @@
 import React, { useRef, useState } from "react";
-
-type AssetType = "video" | "image" | "audio";
-
-type MediaAsset = {
-  id: string;
-  type: AssetType;
-  originalName: string;
-  publicUrl: string;
-  status?: "active" | "trashed" | "deleted";
-};
+import type { AssetType, MediaAsset } from "../lib/mediaTypes";
 
 type PresetTemplate = {
   id: string;
