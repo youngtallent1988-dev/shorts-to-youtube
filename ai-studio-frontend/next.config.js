@@ -26,6 +26,19 @@ const nextConfig = {
     config.resolve.alias["@"] = path.resolve(__dirname);
     return config;
   },
+  // Proxy any /api/* request from the frontend to the Flask backend.
+  // This avoids CORS issues by having Next.js forward the request
+  // server-side rather than the browser hitting the backend directly.
+  async rewrites() {
+    return {
+      beforeFiles: [
+        {
+          source: '/api/:path*',
+          destination: 'https://sailorai.app/api/:path*',
+        },
+      ],
+    };
+  },
 };
 
 module.exports = nextConfig;
