@@ -2,19 +2,22 @@ const path = require("path");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Use the default Node server (not `output: "export"`) so the app
-  // listens on process.env.PORT (Railway uses this for routing) and
-  // behaves as a standard server container.
-  //
-  // "standalone" keeps the runtime minimal but does not change the
-  // port or hosting model.
-  output: "standalone",
   reactStrictMode: true,
   // Allow production builds to succeed even if there are ESLint warnings/errors.
   // This does NOT affect development (npm run dev) and can be removed once
   // all lint issues are cleaned up.
   eslint: {
     ignoreDuringBuilds: true,
+  },
+  // Proxy /api/* requests to the Flask backend so the browser never
+  // crosses origins and Server Actions continue to work correctly.
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: "https://sailorai.app/api/:path*",
+      },
+    ];
   },
   // Ensure Webpack can resolve the same "@/*" alias that TypeScript uses
   // (configured in tsconfig.json). This makes imports like
