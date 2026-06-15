@@ -19,9 +19,13 @@ const nextConfig = {
       },
     ];
   },
-  // Enable Turbopack for faster builds and hot-module replacement.
-  experimental: {
-    turbopack: true,
+  // Enable Turbopack (stable in Next.js 16) for faster builds and HMR.
+  turbopack: {
+    // Mirror the "@/*" path alias so Turbopack resolves it the same way
+    // TypeScript does (configured in tsconfig.json).
+    resolveAlias: {
+      "@": path.resolve(__dirname),
+    },
   },
   // Ensure Webpack can resolve the same "@/*" alias that TypeScript uses
   // (configured in tsconfig.json). This makes imports like
