@@ -2037,13 +2037,18 @@ def upload_asset():
     return jsonify({"ok": True, "file": media_row_to_dict(row)})
 
 
-@app.route("/api/assets", methods=["GET", "OPTIONS"])
+@app.route("/api/assets", methods=["GET", "POST", "OPTIONS"])
 def list_assets():
-    """List media assets for the current user, optionally filtered by type.
+    """GET: List media assets for the current user, optionally filtered by type.
+    POST: Upload a new media asset (video/image/audio) via multipart/form-data.
 
-    Query params:
+    GET query params:
       - type: 'video' | 'image' | 'audio' (optional)
       - includeTrash: 'true' | 'false' (default false)
+
+    POST multipart/form-data fields:
+      - file: the uploaded file (required)
+      - type: 'video' | 'image' | 'audio' (optional; inferred from MIME type if omitted)
     """
     if request.method == "OPTIONS":
         return ("", 204)
@@ -2055,6 +2060,144 @@ def list_assets():
     if not user:
         user = upsert_user_by_email("dev@example.com")
 
+    # ------------------------------------------------------------------
+    # POST: handle file upload
+    # ------------------------------------------------------------------
+    if request.method == "POST":
+        file = request.files.get("file")
+        if not file or file.filename == "":
+            return jsonify({"ok": False, "error": "No file uploaded"}), 400
+
+        original_name = file.filename
+        mime = (file.mimetype or "").lower()
+
+        # Infer media type from the explicit form field, then fall back to MIME type.
+        media_type = (request.form.get("type") or "").strip().lower()
+        if media_type not in {"video", "image", "audio"}:
+            if mime.startswith("video/"):
+                media_type = "video"
+            elif mime.startswith("image/"):
+                media_type = "image"
+            elif mime.startswith("audio/"):
+                media_type = "audio"
+            else:
+                # Last resort: infer from file extension
+                ext_lower = os.path.splitext(original_name)[1].lower()
+                _video_exts = {".mp4", ".mov", ".avi", ".mkv", ".webm", ".flv", ".wmv", ".m4v"}
+                _image_exts = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".svg", ".tiff", ".tif"}
+                _audio_exts = {".mp3", ".wav", ".aac", ".ogg", ".flac", ".m4a", ".opus", ".wma"}
+                if ext_lower in _video_exts:
+                    media_type = "video"
+                elif ext_lower in _image_exts:
+                    media_type = "image"
+                elif ext_lower in _audio_exts:
+                    media_type = "audio"
+                else:
+                    return jsonify({"ok": False, "error": "Cannot determine file type. Provide a 'type' field ('video', 'image', or 'audio')."}), 400
+
+        # Validate MIME type matches the declared/inferred media type
+        if media_type == "video" and mime and not mime.startswith("video/"):
+            return jsonify({"ok": False, "error": "Uploaded file MIME type does not match 'video'"}), 400
+        if media_type == "image" and mime and not mime.startswith("image/"):
+            return jsonify({"ok": False, "error": "Uploaded file MIME type does not match 'image'"}), 400
+        if media_type == "audio" and mime and not mime.startswith("audio/"):
+            return jsonify({"ok": False, "error": "Uploaded file MIME type does not match 'audio'"}), 400
+
+        # Determine per-type size limit
+        if media_type == "video":
+            max_bytes = MAX_VIDEO_UPLOAD_BYTES
+        elif media_type == "image":
+            max_bytes = MAX_IMAGE_UPLOAD_BYTES
+        else:  # audio
+            max_bytes = MAX_AUDIO_UPLOAD_BYTES
+
+        # Generate a safe unique filename, preserving the original extension
+        ext = os.path.splitext(original_name)[1]
+        safe_ext = ext if ext and len(ext) <= 8 else ""
+        file_id = str(uuid4())
+        filename = f"{file_id}{safe_ext}"
+        storage_key = f"uploads/{filename}"
+        output_path = os.path.join(UPLOAD_DIR, filename)
+
+        try:
+            file.save(output_path)
+            size_bytes = os.path.getsize(output_path)
+
+            if size_bytes > max_bytes:
+                try:
+                    os.remove(output_path)
+                except Exception:
+                    app.logger.exception("Failed to remove oversized uploaded file")
+                max_mb = max_bytes // (1024 * 1024)
+                return jsonify({"ok": False, "error": f"File too large. Maximum size for {media_type} is {max_mb} MB."}), 413
+
+            # For videos, also enforce a maximum duration
+            if media_type == "video":
+                try:
+                    result = subprocess.run(
+                        [
+                            "ffprobe",
+                            "-v", "error",
+                            "-show_entries", "format=duration",
+                            "-of", "default=noprint_wrappers=1:nokey=1",
+                            output_path,
+                        ],
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                        text=True,
+                        check=True,
+                    )
+                    duration_s = float(result.stdout.strip() or 0.0)
+                    if duration_s > MAX_VIDEO_DURATION_SECONDS:
+                        try:
+                            os.remove(output_path)
+                        except Exception:
+                            app.logger.exception("Failed to remove over-duration uploaded video")
+                        return jsonify({"ok": False, "error": f"Video too long. Maximum duration is {MAX_VIDEO_DURATION_SECONDS} seconds."}), 413
+                except Exception:
+                    app.logger.exception("Failed to inspect video duration for uploaded asset")
+
+        except Exception as e:
+            app.logger.exception("Failed to save uploaded media file")
+            return jsonify({"ok": False, "error": "Failed to save file", "details": str(e)}), 500
+
+        # Build the fully-qualified public URL using the configured API base URL
+        api_base = os.getenv("API_BASE_URL", "").rstrip("/") or request.host_url.rstrip("/")
+        public_url = f"{api_base}/static/uploads/{filename}"
+        now = iso(now_utc())
+
+        with db() as conn:
+            conn.execute(
+                """
+                INSERT INTO media_files (
+                  id, user_id, type, original_name, mime_type, size_bytes,
+                  storage_key, public_url, status, created_at, updated_at,
+                  trashed_at, deleted_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'active', ?, ?, NULL, NULL)
+                """,
+                (
+                    file_id,
+                    user["id"],
+                    media_type,
+                    original_name,
+                    mime,
+                    size_bytes,
+                    storage_key,
+                    public_url,
+                    now,
+                    now,
+                ),
+            )
+            row = conn.execute(
+                "SELECT * FROM media_files WHERE id = ?",
+                (file_id,),
+            ).fetchone()
+
+        return jsonify({"ok": True, "file": media_row_to_dict(row), "message": "Asset uploaded successfully"}), 201
+
+    # ------------------------------------------------------------------
+    # GET: list assets
+    # ------------------------------------------------------------------
     media_type = (request.args.get("type") or "").strip().lower() or None
     include_trash_raw = (request.args.get("includeTrash") or "false").strip().lower()
     include_trash = include_trash_raw in {"1", "true", "yes"}
