@@ -5,10 +5,6 @@ const nextConfig = {
   // Use the default Node server (not `output: "export"`) so the app
   // listens on process.env.PORT (Railway uses this for routing) and
   // behaves as a standard server container.
-  //
-  // "standalone" keeps the runtime minimal but does not change the
-  // port or hosting model.
-  output: "standalone",
   reactStrictMode: true,
   // Allow production builds to succeed even if there are ESLint warnings/errors.
   // This does NOT affect development (npm run dev) and can be removed once
