@@ -26,6 +26,18 @@ const nextConfig = {
     config.resolve.alias["@"] = path.resolve(__dirname);
     return config;
   },
+  // Proxy all /api/* requests to the Flask backend so the browser never
+  // makes a cross-origin request. The rewrite runs on the Next.js server,
+  // which forwards the call to the Flask service and returns the response
+  // to the client from the same origin — eliminating CORS errors.
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: "https://sailorai.app/api/:path*",
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
