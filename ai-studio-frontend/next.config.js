@@ -16,6 +16,12 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  // Enable Turbopack — the new default bundler in Next.js 15+.
+  // Turbopack resolves tsconfig path aliases (e.g. "@/*") natively,
+  // so the explicit webpack alias callback below is no longer needed.
+  experimental: {
+    turbopack: true,
+  },
   // Ensure Webpack can resolve the same "@/*" alias that TypeScript uses
   // (configured in tsconfig.json). This makes imports like
   // `import { API_BASE } from "@/lib/apiBase";` work reliably in all
