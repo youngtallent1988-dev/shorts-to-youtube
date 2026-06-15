@@ -21,7 +21,7 @@ const nextConfig = {
   },
   // Enable Turbopack for faster builds and hot-module replacement.
   experimental: {
-    turbopack: true,
+    turbopack: { enabled: true },
   },
   // Ensure Webpack can resolve the same "@/*" alias that TypeScript uses
   // (configured in tsconfig.json). This makes imports like
