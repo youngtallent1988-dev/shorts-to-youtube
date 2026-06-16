@@ -288,32 +288,56 @@ export default function EditorPage() {
         },
       );
 
+      let rawBody: string | null = null;
       let data: any = null;
+
       try {
-        data = await res.json();
-      } catch (jsonErr) {
-        console.error("Failed to parse /api/assets JSON:", jsonErr);
+        rawBody = await res.text();
+        if (rawBody) {
+          try {
+            data = JSON.parse(rawBody);
+          } catch (jsonErr) {
+            console.error("Failed to parse /api/assets JSON:", jsonErr);
+          }
+        }
+      } catch (bodyErr) {
+        console.error("Failed to read /api/assets response body:", bodyErr);
       }
 
       if (!res.ok || !data || data.ok === false) {
         console.error("loadAssets: non-OK response", {
           status: res.status,
           data,
+          rawBody,
         });
-        setAssetsError((data && data.error) || "Failed to load assets.");
+
+        const backendError =
+          (data && (data.error || data.message)) ||
+          rawBody ||
+          `Failed to load assets (HTTP ${res.status} ${res.statusText})`;
+
+        setAssetsError(
+          typeof backendError === "string"
+            ? backendError
+            : JSON.stringify(backendError),
+        );
         setAssets([]);
         return;
       }
 
       setAssets(Array.isArray(data.files) ? data.files : []);
-    } catch (err) {
+    } catch (err: any) {
       console.error("loadAssets failed:", err);
-      setAssetsError("Failed to load assets. Using empty asset list.");
+      const message =
+        err && typeof err.message === "string"
+          ? err.message
+          : "Failed to load assets due to an unexpected error.";
+      setAssetsError(message);
       setAssets([]);
     } finally {
       setAssetsLoading(false);
     }
-  }, [API_BASE, assetType]);
+  }, [assetType]);
 
   useEffect(() => {
     void loadAssets();
@@ -908,10 +932,39 @@ export default function EditorPage() {
         credentials: "include",
         body: formData,
       });
-      const data = await res.json();
+
+      let rawBody: string | null = null;
+      let data: any = null;
+      try {
+        rawBody = await res.text();
+        if (rawBody) {
+          try {
+            data = JSON.parse(rawBody);
+          } catch (jsonErr) {
+            console.error("Failed to parse /api/assets/upload JSON:", jsonErr);
+          }
+        }
+      } catch (bodyErr) {
+        console.error("Failed to read /api/assets/upload response body:", bodyErr);
+      }
 
       if (!res.ok || !data?.ok) {
-        setAssetsError(data?.error || "Upload failed.");
+        console.error("handleAssetUpload: non-OK response", {
+          status: res.status,
+          data,
+          rawBody,
+        });
+
+        const backendError =
+          (data && (data.error || data.message)) ||
+          rawBody ||
+          `Upload failed (HTTP ${res.status} ${res.statusText})`;
+
+        setAssetsError(
+          typeof backendError === "string"
+            ? backendError
+            : JSON.stringify(backendError),
+        );
         return;
       }
 
@@ -945,9 +998,13 @@ export default function EditorPage() {
         setSelectedAudioClipId(clipId);
         setAudioTrackDuration(duration || null);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setAssetsError("Upload failed.");
+      const message =
+        err && typeof err.message === "string"
+          ? err.message
+          : "Upload failed due to an unexpected error.";
+      setAssetsError(message);
     }
   }
 
@@ -1492,9 +1549,15 @@ export default function EditorPage() {
         }),
       });
 
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("The server returned a plain text error:", errorText);
+        throw new Error(errorText);
+      }
+
       const data = await res.json();
 
-      if (!res.ok || !data?.ok) {
+      if (!data?.ok) {
         setExportStatus(data?.message || "Export failed. Please try again.");
         return;
       }

@@ -3,26 +3,19 @@ const path = require("path");
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+
+  // Next 16 uses Turbopack by default. Provide an empty Turbopack
+  // config so we can continue to use a small custom webpack alias
+  // without hitting the "webpack config and no turbopack" error.
+  turbopack: {},
+
   // Allow production builds to succeed even if there are ESLint warnings/errors.
   // This does NOT affect development (npm run dev) and can be removed once
   // all lint issues are cleaned up.
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Proxy /api/* requests to the backend so the frontend never has to
-  // hard-code an origin and CORS is avoided entirely in production.
-  async rewrites() {
-    return [
-      {
-        source: "/api/:path*",
-        destination: "https://sailorai.app/api/:path*",
-      },
-    ];
-  },
-  // Enable Turbopack for faster builds and hot-module replacement.
-  experimental: {
-    turbopack: { enabled: true },
-  },
+
   // Ensure Webpack can resolve the same "@/*" alias that TypeScript uses
   // (configured in tsconfig.json). This makes imports like
   // `import { API_BASE } from "@/lib/apiBase";` work reliably in all
@@ -32,6 +25,30 @@ const nextConfig = {
     config.resolve.alias = config.resolve.alias || {};
     config.resolve.alias["@"] = path.resolve(__dirname);
     return config;
+  },
+  // Proxy any frontend request to "/api/:path*".
+  // - In development, hit the local Flask backend on 127.0.0.1:5001
+  //   (using 127.0.0.1 instead of "localhost" avoids Mac proxy loops).
+  // - In production, use NEXT_PUBLIC_API_URL (or default to https://sailorai.app)
+  //   so the hosted site talks to the real backend instead of 127.0.0.1.
+  async rewrites() {
+    const isDev = process.env.NODE_ENV !== "production";
+    if (isDev) {
+      return [
+        {
+          source: "/api/:path*",
+          destination: "http://127.0.0.1:5001/api/:path*",
+        },
+      ];
+    }
+
+    const targetBase = (process.env.NEXT_PUBLIC_API_URL || "https://sailorai.app").replace(/\/+$/, "");
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${targetBase}/api/:path*`,
+      },
+    ];
   },
 };
 

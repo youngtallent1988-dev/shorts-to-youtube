@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 export default function AgentPage() {
@@ -14,6 +15,67 @@ export default function AgentPage() {
     { label: "Mini Apps", href: "/mini-apps" },
     { label: "Agent", href: "/agent" },
   ];
+
+  type ChatMessage = {
+    id: string;
+    role: "user" | "assistant";
+    text: string;
+  };
+
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [input, setInput] = useState("");
+  const [isSending, setIsSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSend(e?: React.FormEvent) {
+    if (e) e.preventDefault();
+    const trimmed = input.trim();
+    if (!trimmed || isSending) return;
+
+    const userMessage: ChatMessage = {
+      id: `user-${Date.now()}`,
+      role: "user",
+      text: trimmed,
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
+    setIsSending(true);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/ai/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: trimmed }),
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok || !data?.ok) {
+        const msg =
+          (data && (data.error || data.message)) ||
+          `Agent request failed (HTTP ${res.status} ${res.statusText})`;
+        throw new Error(msg);
+      }
+
+      const assistantText: string =
+        (data.text && String(data.text)) || "(Agent did not return any text.)";
+
+      const assistantMessage: ChatMessage = {
+        id: `assistant-${Date.now()}`,
+        role: "assistant",
+        text: assistantText,
+      };
+
+      setMessages((prev) => [...prev, assistantMessage]);
+    } catch (err: any) {
+      console.error("Agent chat error:", err);
+      setError(err?.message || "Agent request failed.");
+    } finally {
+      setIsSending(false);
+    }
+  }
 
   return (
     <div className="min-h-screen text-white flex cinematic-bg">
@@ -76,9 +138,78 @@ export default function AgentPage() {
           <div className="max-w-4xl mx-auto">
             <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-3">Agent dashboard</h1>
             <p className="text-sm md:text-base text-white/60 max-w-2xl mb-6">
-              This is a styled placeholder for an automation-focused view. In a future version, you
-              could queue up prompts, schedule runs, and let an AI agent manage batches of renders.
+              This is a styled workspace for an automation-focused view. You can chat with the
+              Sailor AI agent below, and in the future queue prompts, schedule runs, and manage
+              multi-shot pipelines.
             </p>
+
+            {/* Agent chat box */}
+            <section className="rounded-3xl glass-panel border border-white/15 p-4 md:p-5 mb-6">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <div className="text-[10px] uppercase tracking-[0.2em] text-white/40 mb-1">
+                    Agent chat
+                  </div>
+                  <div className="text-xs md:text-sm text-white/65">
+                    Ask Sailor AI for ideas, titles, or editing suggestions.
+                  </div>
+                </div>
+              </div>
+
+              <div className="h-64 md:h-72 overflow-y-auto rounded-2xl border border-white/10 bg-black/40 p-3 space-y-3">
+                {messages.length === 0 ? (
+                  <div className="h-full flex items-center justify-center text-xs text-white/40 text-center px-4">
+                    Start the conversation by typing a prompt below. For example: "Brainstorm 5
+                    video ideas for my Sailor AI launch".
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {messages.map((m) => (
+                      <div
+                        key={m.id}
+                        className={`max-w-[80%] rounded-2xl px-3 py-2 text-xs md:text-sm leading-relaxed whitespace-pre-wrap break-words ${{
+                          user: "ml-auto bg-cyan-500/20 border border-cyan-300/60 text-cyan-50",
+                          assistant:
+                            "mr-auto bg-white/8 border border-white/15 text-white/85",
+                        }[m.role]}`}
+                      >
+                        {m.text}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {error && (
+                <div className="mt-2 text-[11px] text-red-300 bg-red-500/10 border border-red-500/40 rounded-xl px-3 py-1.5">
+                  {error}
+                </div>
+              )}
+
+              <form
+                onSubmit={handleSend}
+                className="mt-3 flex flex-col sm:flex-row gap-2 items-stretch sm:items-center"
+              >
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Ask the agent anything about your videos, prompts, or edits…"
+                  className="flex-1 rounded-2xl border border-white/20 bg-black/60 px-3 py-2 text-xs md:text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-cyan-400/80"
+                />
+                <button
+                  type="submit"
+                  disabled={isSending || !input.trim()}
+                  className={`px-4 py-2 rounded-2xl text-xs md:text-sm font-semibold border transition-colors min-w-[90px] text-center ${
+                    isSending || !input.trim()
+                      ? "border-white/20 bg-white/10 text-white/40 cursor-not-allowed"
+                      : "border-cyan-400 bg-cyan-500/20 text-cyan-100 hover:bg-cyan-500/30"
+                  }`}
+                >
+                  {isSending ? "Thinking…" : "Send"}
+                </button>
+              </form>
+            </section>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               <div className="rounded-3xl glass-panel border border-white/10 p-5 text-sm text-white/70">

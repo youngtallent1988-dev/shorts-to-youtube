@@ -6,15 +6,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { API_BASE } from "../lib/apiBase";
 import { useUserContext } from "./StudioChrome";
 
-export default function Home() {
-  return (
-    <Suspense>
-      <HomeContent />
-    </Suspense>
-  );
-}
-
-function HomeContent() {
+function HomeInner() {
 
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
@@ -340,18 +332,32 @@ function HomeContent() {
         body: JSON.stringify(payload),
       });
 
-      const data = await response.json();
+      let data: any = null;
+      try {
+        data = await response.json();
+      } catch (jsonErr) {
+        // If the backend ever returns HTML (e.g. a 502 page), avoid throwing
+        // a JSON parse error in the client and surface a clean status instead.
+        console.error("Failed to parse /api/generate-video JSON:", jsonErr);
+      }
 
       if (!response.ok) {
         if (response.status === 401) {
           setAuthStatus("Please sign in to generate.");
         } else if (response.status === 402) {
           setAuthStatus(
-            `Not enough credits. You have ${data?.credits ?? 0}, need ${data?.required ?? "?"}.`,
+            data
+              ? `Not enough credits. You have ${data?.credits ?? 0}, need ${data?.required ?? "?"}.`
+              : "Not enough credits.",
           );
         } else {
           setAuthStatus(data?.error || "Generation failed");
         }
+        return;
+      }
+
+      if (!data) {
+        setAuthStatus("Generation failed: invalid server response.");
         return;
       }
 
@@ -367,7 +373,15 @@ function HomeContent() {
         const statusRes = await fetch(`${API_BASE}/api/video-status/${jobId}`, {
           method: "GET",
         });
-        const statusData = await statusRes.json();
+        const statusData = await statusRes.json().catch((err) => {
+          console.error("Failed to parse /api/video-status JSON:", err);
+          return null;
+        });
+
+        if (!statusRes.ok || !statusData) {
+          setAuthStatus(statusData?.error || "Video generation status check failed.");
+          return;
+        }
 
         const status = statusData?.status as string | undefined;
         const videoUrl = statusData?.videoUrl as string | undefined;
@@ -1308,6 +1322,14 @@ function HomeContent() {
 
     </div>
 
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={null}>
+      <HomeInner />
+    </Suspense>
   );
 }
 

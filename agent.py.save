@@ -1,0 +1,35 @@
+import os
+import google.generativeai as genai
+
+# Paste your real Google AI Studio API key inside the quotes below
+os.environ["GEMINI_API_KEY"] = "PASTE_YOUR_COPIED_API_KEY_HERE"
+
+genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+
+print("🤖 Connecting to Gemini ecosystem...")
+
+# Create the model instance using standard configuration
+model = genai.GenerativeModel('gemini-1.5-flash')
+
+response = model.generate_content('Give me a 1-sentence motivation quote for a software engineer building an AI startup.')
+
+print("\n🚀 Agent Response:")
+print(response.text)
+import os
+from google import genai
+
+# Paste your real Google AI Studio API key inside the quotes below
+os.environ["GEMINI_API_KEY"] = "PASTE_YOUR_COPIED_API_KEY_HERE"
+
+client = genai.Client()
+
+print("🤖 Connecting to Gemini ecosystem...")
+
+response = client.models.generate_content(
+    model='gemini-2.5-flash',
+    contents='Give me a 1-sentence motivation quote for a software engineer building an AI startup.',
+)
+
+print("\n🚀 Agent Response:")
+print(response.text)
+

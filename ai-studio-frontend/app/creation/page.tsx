@@ -340,9 +340,17 @@ export default function CreationPage() {
           }),
         });
 
-        const runwayData = await runwayResponse.json();
+        let runwayData: any = null;
+        try {
+          runwayData = await runwayResponse.json();
+        } catch (jsonErr) {
+          // If the Next.js route ever returns an HTML error page, avoid throwing
+          // a JSON parse error and surface a clearer generation error instead.
+          // eslint-disable-next-line no-console
+          console.error("Failed to parse /api/runway/text-to-video JSON:", jsonErr);
+        }
 
-        if (!runwayResponse.ok) {
+        if (!runwayResponse.ok || !runwayData) {
           setGenerationStage("error");
           const rawMessage = (runwayData && (runwayData as any).error) || "Runway veo3.1 generation failed.";
           setCreateStatus(normalizeErrorMessage(rawMessage));
@@ -427,7 +435,15 @@ export default function CreationPage() {
         body: JSON.stringify(payload),
       });
 
-      const data = await response.json();
+      let data: any = null;
+      try {
+        data = await response.json();
+      } catch (jsonErr) {
+        // If the Flask backend ever responds with an HTML error page (e.g. a
+        // proxy/500 page), avoid crashing the client with a JSON parse error.
+        // eslint-disable-next-line no-console
+        console.error("Failed to parse /api/generate-video JSON:", jsonErr);
+      }
 
       if (!response.ok || !data?.jobId) {
         setGenerationStage("error");
@@ -448,9 +464,13 @@ export default function CreationPage() {
             method: "GET",
             credentials: "include",
           });
-          const statusData = await statusResponse.json();
+          const statusData = await statusResponse.json().catch((jsonErr: unknown) => {
+            // eslint-disable-next-line no-console
+            console.error("Failed to parse /api/video-status JSON:", jsonErr);
+            return null;
+          });
 
-          if (!statusResponse.ok || statusData?.error) {
+          if (!statusResponse.ok || !statusData || statusData?.error) {
             setGenerationStage("error");
             const rawMessage = statusData?.error || "Video generation failed.";
             setCreateStatus(normalizeErrorMessage(rawMessage));

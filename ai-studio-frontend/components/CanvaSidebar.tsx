@@ -29,6 +29,13 @@ type ActiveToolKind =
   | "elements"
   | "timeline";
 
+// Simple chat message shape for the Agent sidebar tab
+type AgentChatMessage = {
+  id: string;
+  role: "user" | "assistant";
+  text: string;
+};
+
 type CanvaSidebarProps = {
   assets: MediaAsset[];
   setAssets: React.Dispatch<React.SetStateAction<MediaAsset[]>>;
@@ -95,6 +102,84 @@ export default function CanvaSidebar({
   // will auto-close it so the canvas has more room.
   const [drawerOpen, setDrawerOpen] = useState(true);
 
+  // Agent chat state (for the Agent tab in the editor sidebar)
+  const [agentMessages, setAgentMessages] = useState<AgentChatMessage[]>([]);
+  const [agentInput, setAgentInput] = useState("");
+  const [agentIsSending, setAgentIsSending] = useState(false);
+  const [agentError, setAgentError] = useState<string | null>(null);
+
+  async function handleAgentSend(e?: React.FormEvent) {
+    if (e) e.preventDefault();
+    const trimmed = agentInput.trim();
+    if (!trimmed || agentIsSending) return;
+
+    const userMessage: AgentChatMessage = {
+      id: `user-${Date.now()}`,
+      role: "user",
+      text: trimmed,
+    };
+
+    setAgentMessages((prev) => [...prev, userMessage]);
+    setAgentInput("");
+    setAgentIsSending(true);
+    setAgentError(null);
+
+    try {
+      const res = await fetch("/api/ai/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: trimmed }),
+      });
+
+      let rawBody: string | null = null;
+      let data: any = null;
+      try {
+        rawBody = await res.text();
+        if (rawBody) {
+          try {
+            data = JSON.parse(rawBody);
+          } catch (jsonErr) {
+            // eslint-disable-next-line no-console
+            console.error("Failed to parse /api/ai/generate JSON:", jsonErr);
+          }
+        }
+      } catch (bodyErr) {
+        // eslint-disable-next-line no-console
+        console.error("Failed to read /api/ai/generate response body:", bodyErr);
+      }
+
+      if (!res.ok || !data?.ok) {
+        const backendError =
+          (data && (data.error || data.message)) ||
+          rawBody ||
+          `Agent request failed (HTTP ${res.status} ${res.statusText})`;
+
+        const msg =
+          typeof backendError === "string"
+            ? backendError
+            : JSON.stringify(backendError);
+        throw new Error(msg);
+      }
+
+      const assistantText: string =
+        (data.text && String(data.text)) || "(Agent did not return any text.)";
+
+      const assistantMessage: AgentChatMessage = {
+        id: `assistant-${Date.now()}`,
+        role: "assistant",
+        text: assistantText,
+      };
+
+      setAgentMessages((prev) => [...prev, assistantMessage]);
+    } catch (err: any) {
+      // eslint-disable-next-line no-console
+      console.error("Agent sidebar chat error:", err);
+      setAgentError(err?.message || "Agent request failed.");
+    } finally {
+      setAgentIsSending(false);
+    }
+  }
+
   const closeDrawer = () => setDrawerOpen(false);
 
   const tabs = [
@@ -106,6 +191,7 @@ export default function CanvaSidebar({
     { name: "Transitions", icon: "✨" },
     { name: "Projects", icon: "📂" },
     { name: "Apps", icon: "📱" },
+    { name: "Agent", icon: "🤖" },
   ];
 
   const recentlyUsed = [
@@ -736,6 +822,71 @@ export default function CanvaSidebar({
         </div>
       )}
 
+      {drawerOpen && activeTab === "Agent" && (
+        <div style={styles.contentDrawer}>
+          <div style={styles.sectionBlock}>
+            <div style={styles.sectionHeaderRow}>
+              <h3 style={styles.sectionTitleText}>Agent chat</h3>
+            </div>
+            <div
+              className="h-64 overflow-y-auto rounded-2xl border border-slate-800 bg-slate-950/90 p-3 space-y-3"
+            >
+              {agentMessages.length === 0 ? (
+                <div className="h-full flex items-center justify-center text-xs text-slate-400 text-center px-4">
+                  Start a conversation with Sailor AI. For example: "Brainstorm 5 short video
+                  ideas for my product".
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {agentMessages.map((m) => (
+                    <div
+                      key={m.id}
+                      className={`max-w-[80%] rounded-2xl px-3 py-2 text-xs leading-relaxed whitespace-pre-wrap break-words ${
+                        m.role === "user"
+                          ? "ml-auto bg-cyan-500/20 border border-cyan-300/60 text-cyan-50"
+                          : "mr-auto bg-white/5 border border-white/15 text-white/85"
+                      }`}
+                    >
+                      {m.text}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {agentError && (
+              <div className="mt-2 text-[11px] text-red-300 bg-red-500/10 border border-red-500/40 rounded-xl px-3 py-1.5">
+                {agentError}
+              </div>
+            )}
+
+            <form
+              onSubmit={handleAgentSend}
+              className="mt-3 flex flex-col gap-2"
+            >
+              <input
+                type="text"
+                value={agentInput}
+                onChange={(e) => setAgentInput(e.target.value)}
+                placeholder="Ask the agent anything about your videos, prompts, or edits…"
+                className="w-full rounded-2xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-50 placeholder:text-slate-500 focus:outline-none focus:border-cyan-400/80"
+              />
+              <button
+                type="submit"
+                disabled={agentIsSending || !agentInput.trim()}
+                className={`w-full px-4 py-2 rounded-2xl text-xs font-semibold border transition-colors text-center ${
+                  agentIsSending || !agentInput.trim()
+                    ? "border-white/20 bg-white/10 text-white/40 cursor-not-allowed"
+                    : "border-cyan-400 bg-cyan-500/20 text-cyan-100 hover:bg-cyan-500/30"
+                }`}
+              >
+                {agentIsSending ? "Thinking…" : "Send"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
       {drawerOpen && activeTab === "Uploads" && (
         <div style={styles.contentDrawer}>
           <div style={styles.uploadsHeaderRow}>
@@ -752,32 +903,43 @@ export default function CanvaSidebar({
             </button>
           </div>
 
-          {/* Upload button + hidden file input */}
-          <div style={styles.uploadButtonWrapper}>
-            <button
-              type="button"
-              style={styles.primaryUploadButton}
-              onClick={() => {
-                if (fileInputRef.current) fileInputRef.current.click();
-              }}
-            >
-              <span style={{ marginRight: 8 }}>📤</span>
-              <span>Upload files</span>
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept={inputAccept}
-              style={{ display: "none" }}
-              onChange={(event) => {
-                const file = event.target.files?.[0];
-                if (!file) return;
+          {/* Hidden file input */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept={inputAccept}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
                 handleAssetUpload(file);
-                // Reset the input so the same file can be chosen again if needed
-                event.target.value = "";
-              }}
-            />
-          </div>
+                // Reset input so same file can be uploaded again
+                if (fileInputRef.current) {
+                  fileInputRef.current.value = "";
+                }
+              }
+            }}
+            style={{ display: "none" }}
+          />
+
+          {/* Upload Button */}
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            style={{
+              width: "100%",
+              padding: "12px 16px",
+              marginBottom: "16px",
+              backgroundColor: "#8b3dff",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              fontSize: "14px",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            📤 Upload {assetType === "video" ? "Video" : assetType === "image" ? "Image" : "Audio"}
+          </button>
 
           {/* Sub-tabs for Images / Videos / Audio */}
           <div style={styles.uploadsSubTabRow}>

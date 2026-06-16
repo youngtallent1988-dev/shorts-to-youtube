@@ -8,8 +8,12 @@ import tempfile
 from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
+
 import requests
 from flask_cors import CORS
+import google.generativeai as genai
 
 # Optional media/analysis libraries for advanced editor features
 try:  # pragma: no cover
@@ -40,9 +44,55 @@ except Exception:  # noqa: BLE001
 
 from flask import Flask, jsonify, render_template, request
 
+sentry_sdk.init(
+    dsn=os.environ.get("SENTRY_DSN"),
+    integrations=[FlaskIntegration()],
+    traces_sample_rate=1.0,
+    profiles_sample_rate=1.0,
+)
+
 # Explicitly configure Flask to serve files from the local "static" directory
 # so /static/uploads and /static/exports are reachable by the browser.
 app = Flask(__name__, static_folder="static", static_url_path="/static")
+
+# Global self-healing error interceptor
+# This will catch unexpected exceptions, wake up agent.py with the traceback,
+# and still return a JSON error payload so the frontend never hangs.
+@app.errorhandler(Exception)
+def handle_runtime_crash(error):
+    error_message = str(error)
+    target_file = "app.py"  # Primary file to attempt self-healing on
+
+    print("🚨 ALERT: Backend crashed! Waking up the Self-Healing Agent...")
+
+    # Run agent.py in a background process, handing it the crash log details
+    try:
+        subprocess.Popen(
+            [
+                "python3",
+                "agent.py",
+                error_message,
+                target_file,
+            ]
+        )
+    except Exception as e:
+        print(f"Failed to trigger healing script: {str(e)}")
+
+    # For API routes, always return JSON so the frontend does not hang
+    if request.path.startswith("/api/"):
+        return (
+            jsonify(
+                {
+                    "ok": False,
+                    "error": error_message,
+                    "healing_status": "Self-healing script triggered automatically!",
+                }
+            ),
+            500,
+        )
+
+    # For non-API routes, fall back to a simple text response
+    return "Internal Server Error", 500
 
 # -------------------------
 # Config
@@ -80,6 +130,24 @@ REPLICATE_API_BASE = "https://api.replicate.com/v1"
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 VEO_GENERATE_URL = os.getenv("VEO_GENERATE_URL")  # e.g. https://your-veo-endpoint/generate
 VEO_STATUS_URL = os.getenv("VEO_STATUS_URL")      # e.g. https://your-veo-endpoint/status
+
+# Google Gemini (Generative AI) via google-generativeai
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_MODEL_NAME = os.getenv("GEMINI_MODEL_NAME", "gemini-2.5-flash")
+
+# We initialize a single GenerativeModel instance at startup so that
+# all /api/ai/generate calls share the same configuration.
+gemini_model: genai.GenerativeModel | None = None
+if GEMINI_API_KEY:
+    try:  # pragma: no cover - best effort init
+        genai.configure(api_key=GEMINI_API_KEY)
+        gemini_model = genai.GenerativeModel(GEMINI_MODEL_NAME)
+    except Exception as e:
+        # Don't crash the app if Gemini init fails; just log.
+        # Other routes will still work and /api/ai/generate will
+        # return a clear error message instead.
+        app.logger.warning("Failed to configure Google Gemini client: %s", e)
+        gemini_model = None
 
 # Resend (transactional email)
 RESEND_API_KEY = os.getenv("RESEND_API_KEY")
@@ -127,9 +195,13 @@ ALLOWED_ORIGINS = {
     "http://127.0.0.1:3001",
 }
 
-# Enable CORS for all routes. In dev we allow any origin so the Next.js
-# frontend can always talk to this API, even if ports or hosts change.
-CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
+# Enable CORS for API routes. Allow the production frontend and local dev
+# frontend, and support cookies / credentials for session auth.
+CORS(
+    app,
+    resources={r"/api/*": {"origins": ["https://sailorai.app", "http://localhost:3000"]}},
+    supports_credentials=True,
+)
 
 # -------------------------
 # DB
@@ -321,14 +393,42 @@ def media_row_to_dict(row: sqlite3.Row) -> dict:
 
 @app.after_request
 def add_cors_headers(response):
-    # Echo back the request origin when present, or allow all in dev.
-    origin = request.headers.get("Origin") or "*"
-    response.headers["Access-Control-Allow-Origin"] = origin
-    response.headers["Vary"] = "Origin"
-    response.headers["Access-Control-Allow-Credentials"] = "true"
-    response.headers["Access-Control-Allow-Methods"] = "GET, POST, DELETE, OPTIONS"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+    """Augment CORS headers after Flask-CORS has run.
+
+    We let Flask-CORS manage Access-Control-Allow-Origin for /api/* routes
+    based on the explicit origins list above. Here we only ensure that
+    credentials, methods and headers are consistently allowed.
+    """
+    # Do not override Access-Control-Allow-Origin set by Flask-CORS.
+    # Just make sure the other CORS headers are present.
+    response.headers.setdefault("Access-Control-Allow-Credentials", "true")
+    response.headers.setdefault("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
+    response.headers.setdefault("Access-Control-Allow-Headers", "Content-Type, Authorization")
     return response
+
+
+# -------------------------
+# Global error handling for API routes
+# -------------------------
+
+
+@app.errorhandler(500)
+def handle_internal_server_error(err):  # pragma: no cover - safety net
+    """Ensure /api/* routes never return a bare HTML "Internal Server Error" page.
+
+    If any unhandled exception bubbles up from an API handler, we convert it
+    to a JSON response so frontend callers (like /app/editor/loadAssets) never
+    see a plain text/HTML body that would break JSON.parse.
+    """
+    app.logger.exception("Unhandled 500 error on %s: %s", request.path, err)
+
+    # For API routes, always emit JSON so the frontend can safely parse it.
+    if request.path.startswith("/api/"):
+        return jsonify({"ok": False, "error": "Internal Server Error"}), 500
+
+    # For non-API pages, fall back to a simple text response. The editor
+    # never calls these with JSON.parse, so this is safe.
+    return "Internal Server Error", 500
 
 
 # -------------------------
@@ -1021,6 +1121,57 @@ def generate_video():
             add_credits(user["id"], GENERATION_COST_CREDITS, "refund", reference="generation_failed")
 
         return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/ai/generate", methods=["POST", "OPTIONS"])
+def ai_generate():
+    """Simple AI text generation via Google Gemini.
+
+    Expects JSON body: { "prompt": "..." }
+    Returns: { "ok": true, "prompt": "...", "text": "..." }
+    """
+    if request.method == "OPTIONS":
+        return ("", 204)
+
+    if not GEMINI_API_KEY:
+        return jsonify({"ok": False, "error": "Missing GEMINI_API_KEY on server."}), 500
+
+    if gemini_model is None:
+        return jsonify({"ok": False, "error": "Gemini client is not initialized on server."}), 500
+
+    data = request.json or {}
+    prompt = (data.get("prompt") or "").strip()
+    if not prompt:
+        return jsonify({"ok": False, "error": "Missing 'prompt' in request body."}), 400
+
+    try:
+        # Use the shared google-generativeai GenerativeModel instance.
+        result = gemini_model.generate_content(prompt)
+
+        # Try to extract the primary text response. The google-generativeai
+        # client surfaces this as `result.text` for simple use cases.
+        text = getattr(result, "text", None) or ""
+
+        # Fallback: if `text` is empty but candidates exist, try to
+        # stitch together candidate text segments so the frontend always
+        # gets something useful back.
+        if not text and hasattr(result, "candidates"):
+            try:
+                parts: list[str] = []
+                for cand in result.candidates or []:
+                    for part in getattr(cand, "content", {}).get("parts", []):  # type: ignore[union-attr]
+                        t = getattr(part, "text", None) or part.get("text")  # type: ignore[union-attr]
+                        if isinstance(t, str):
+                            parts.append(t)
+                text = "\n".join(parts)
+            except Exception:
+                # If this fallback fails, we'll just return an empty string.
+                pass
+
+        return jsonify({"ok": True, "prompt": prompt, "text": text})
+    except Exception as e:  # pragma: no cover - external API
+        app.logger.exception("Gemini /api/ai/generate failed")
+        return jsonify({"ok": False, "error": str(e)}), 500
 
 
 @app.route("/api/generate-video", methods=["POST", "OPTIONS"])
@@ -2044,11 +2195,14 @@ def list_assets():
     Query params:
       - type: 'video' | 'image' | 'audio' (optional)
       - includeTrash: 'true' | 'false' (default false)
+
+    This route always returns a JSON payload, even on error, so the
+    frontend never sees an HTML 404/500 when loading the sidebar.
     """
     if request.method == "OPTIONS":
         return ("", 204)
 
-    init_db()
+        init_db()
 
     # Try to use the logged-in user; if none, fall back to a dev user for local usage.
     user = get_user_from_session()
@@ -2079,8 +2233,11 @@ def list_assets():
             tuple(params),
         ).fetchall()
 
-    # Normal path: return the list of files for this user (possibly empty).
-    return jsonify({"ok": True, "files": [media_row_to_dict(r) for r in rows]})
+    files_payload = [media_row_to_dict(r) for r in rows]
+    # Provide both "files" (what the frontend expects) and "assets" for
+    # compatibility with simpler clients.
+    return jsonify({"ok": True, "files": files_payload, "assets": files_payload})
+
 
 
 
@@ -2093,6 +2250,7 @@ def trash_asset(file_id: str):
     init_db()
 
     # Try to use the logged-in user; if none, fall back to a dev user for local usage.
+
     user = get_user_from_session()
     if not user:
         user = upsert_user_by_email("dev@example.com")
@@ -2123,6 +2281,7 @@ def restore_asset(file_id: str):
     init_db()
 
     # Try to use the logged-in user; if none, fall back to a dev user for local usage.
+
     user = get_user_from_session()
     if not user:
         user = upsert_user_by_email("dev@example.com")
@@ -2307,6 +2466,10 @@ if __name__ == "__main__":
     # Local/dev entrypoint. Railway and other production environments should
     # run this app via gunicorn (e.g. `gunicorn app:app`) and will inject the
     # PORT environment variable dynamically.
+    #
+    # For local development we default to port 5001 so that the Next.js
+    # dev proxy in ai-studio-frontend/next.config.js can route /api/*
+    # traffic to this Flask app (Option A).
     init_db()
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 5001))
     app.run(host="0.0.0.0", port=port, debug=True)

@@ -3,16 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbo",
-    "build": "npm ci --force && next build",
-    "start": "next start",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "node .next/standalone/server.js",
     "lint": "eslint"
   },
   "dependencies": {
     "@runwayml/sdk": "^3.21.0",
     "framer-motion": "^12.0.6",
     "lucide-react": "^1.16.0",
-    "next": "16.2.9",
+    "next": "^16.2.9",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
@@ -22,7 +22,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.2.9",
+    "eslint-config-next": "^16.2.9",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
