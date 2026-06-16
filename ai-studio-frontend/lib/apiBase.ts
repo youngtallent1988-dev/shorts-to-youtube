@@ -1,4 +1,7 @@
-const DEFAULT_API_BASE = "https://sailorai.app";
+// Default backend base URL used when no explicit NEXT_PUBLIC_API_URL is set.
+// In production, this should point directly at your Flask API host on Railway.
+// You can still override it via NEXT_PUBLIC_API_URL / NEXT_PUBLIC_API_BASE.
+const DEFAULT_API_BASE = "https://shorts-to-youtube-production-bab8.up.railway.app";
 
 /**
  * Single source of truth for the backend base URL.
@@ -46,12 +49,10 @@ function selectApiBase(): string {
   }
 
   // As a last resort, if we're running in a browser with no explicit
-  // API base configured, fall back to same-origin. This helps when the
-  // frontend and backend are deployed behind a single URL.
-  if (typeof window !== "undefined" && window.location?.origin) {
-    return window.location.origin.replace(/\/+$/, "");
-  }
-
+  // API base configured, fall back to DEFAULT_API_BASE (your Flask
+  // backend on Railway). This avoids accidentally pointing API calls
+  // back at the frontend origin (sailorai.app), which caused 404 HTML
+  // responses on /api/assets in production.
   return DEFAULT_API_BASE;
 }
 
