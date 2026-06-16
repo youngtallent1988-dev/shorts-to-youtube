@@ -42,6 +42,7 @@ const navItems = [
   { label: "Posted", href: "/posted" },
   { label: "Subscribe", href: "/pricing" },
   { label: "Mini Apps", href: "/mini-apps" },
+  { label: "Agent", href: "/agent" },
 ] as const;
 
 // Map sidebar nav labels to their icons in a type-safe way so that
@@ -56,6 +57,7 @@ const NAV_ICONS: Record<NavLabel, string> = {
   Posted: "↑",
   Subscribe: "★",
   "Mini Apps": "◎",
+  Agent: "🤖",
 };
 
 export default function StudioChrome({ children }: { children: ReactNode }) {
@@ -264,6 +266,16 @@ export default function StudioChrome({ children }: { children: ReactNode }) {
                       {user.credits}
                     </span>
                   )}
+                </button>
+
+                {/* Agent (global) */}
+                <button
+                  type="button"
+                  onClick={() => router.push("/agent")}
+                  className="glow-focus flex items-center justify-center h-9 w-9 rounded-full border border-white/15 bg-transparent text-white/70 hover:text-white hover:border-emerald-400/80 hover:shadow-[0_0_22px_rgba(16,185,129,0.8)] transition"
+                  aria-label="Agent"
+                >
+                  <span className="text-[16px] leading-none">🤖</span>
                 </button>
 
                 {/* Notifications */}

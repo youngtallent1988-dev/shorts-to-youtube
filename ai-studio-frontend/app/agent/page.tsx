@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { API_BASE } from "@/lib/apiBase";
 
 export default function AgentPage() {
   const router = useRouter();
@@ -44,7 +45,7 @@ export default function AgentPage() {
     setError(null);
 
     try {
-      const res = await fetch("/api/ai/generate", {
+      const res = await fetch(`${API_BASE}/api/ai/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: trimmed }),
