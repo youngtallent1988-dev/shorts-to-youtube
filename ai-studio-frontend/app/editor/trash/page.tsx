@@ -903,6 +903,9 @@ export default function EditorPage() {
 
     setExportStatus("Preparing export...");
 
+    // For now, always export as a direct download to the user.
+    const destination = "download" as const;
+
     try {
       const res = await fetch("/api/export", {
         method: "POST",
