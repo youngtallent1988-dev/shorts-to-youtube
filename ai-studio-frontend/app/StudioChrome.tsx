@@ -84,9 +84,11 @@ export default function StudioChrome({ children }: { children: ReactNode }) {
     }
   }
 
-  useEffect(() => {
-    void refreshUser();
-  }, []);
+  // Temporarily disabled: refreshUser() on mount was crashing the app when
+  // the API was unreachable. Comment this back in once the API is stable.
+  // useEffect(() => {
+  //   void refreshUser();
+  // }, []);
 
   async function requestMagicLink() {
     setAuthStatus("");
