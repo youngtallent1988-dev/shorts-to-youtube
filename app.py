@@ -107,15 +107,19 @@ UPLOAD_DIR = os.path.join(os.path.dirname(__file__), "static", "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # Maximum allowed upload size defaults (in bytes) for any single media file.
-# Global default: 500 MB (MAX_UPLOAD_BYTES), can be overridden per type via
+# NOTE: These defaults are intentionally generous so production can handle
+# larger creator uploads without extra env wiring. You can always override
+# them via MAX_* env vars on Railway if needed.
+# Global default: 2 GB (MAX_UPLOAD_BYTES), can be overridden per type via
 # MAX_VIDEO_UPLOAD_BYTES, MAX_IMAGE_UPLOAD_BYTES, MAX_AUDIO_UPLOAD_BYTES.
-MAX_UPLOAD_BYTES = int(os.getenv("MAX_UPLOAD_BYTES", str(500 * 1024 * 1024)))
+MAX_UPLOAD_BYTES = int(os.getenv("MAX_UPLOAD_BYTES", str(2 * 1024 * 1024 * 1024)))  # 2 GB
 MAX_VIDEO_UPLOAD_BYTES = int(os.getenv("MAX_VIDEO_UPLOAD_BYTES", str(MAX_UPLOAD_BYTES)))
-MAX_IMAGE_UPLOAD_BYTES = int(os.getenv("MAX_IMAGE_UPLOAD_BYTES", str(50 * 1024 * 1024)))   # 50 MB default
-MAX_AUDIO_UPLOAD_BYTES = int(os.getenv("MAX_AUDIO_UPLOAD_BYTES", str(200 * 1024 * 1024)))  # 200 MB default
+MAX_IMAGE_UPLOAD_BYTES = int(os.getenv("MAX_IMAGE_UPLOAD_BYTES", str(200 * 1024 * 1024)))   # 200 MB default
+MAX_AUDIO_UPLOAD_BYTES = int(os.getenv("MAX_AUDIO_UPLOAD_BYTES", str(500 * 1024 * 1024)))  # 500 MB default
 
-# Maximum allowed duration for uploaded videos (in seconds). Default: 60s.
-MAX_VIDEO_DURATION_SECONDS = int(os.getenv("MAX_VIDEO_DURATION_SECONDS", "60"))
+# Maximum allowed duration for uploaded videos (in seconds).
+# Bumped to 300s (5 minutes) by default so longer clips work in production.
+MAX_VIDEO_DURATION_SECONDS = int(os.getenv("MAX_VIDEO_DURATION_SECONDS", "300"))
 
 FAL_KEY = os.getenv("FAL_KEY")
 REPLICATE_API_TOKEN = os.getenv("REPLICATE_API_TOKEN")
