@@ -79,13 +79,21 @@ export default function StudioChrome({ children }: { children: ReactNode }) {
       });
       const data = await r.json();
       setUser((data as any)?.user ?? null);
-    } catch {
-      // ignore
+    } catch (err) {
+      console.error("[StudioChrome] Failed to fetch current user — API may be unavailable:", err);
+      setUser(null);
     }
   }
 
   useEffect(() => {
-    void refreshUser();
+    (async () => {
+      try {
+        await refreshUser();
+      } catch (err) {
+        console.error("[StudioChrome] Unexpected error during mount user refresh:", err);
+        setUser(null);
+      }
+    })();
   }, []);
 
   async function requestMagicLink() {
