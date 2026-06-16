@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import type { AssetType, MediaAsset } from "../lib/mediaTypes";
+import { API_BASE } from "../lib/apiBase";
 
 type PresetTemplate = {
   id: string;
@@ -125,7 +126,7 @@ export default function CanvaSidebar({
     setAgentError(null);
 
     try {
-      const res = await fetch("/api/ai/generate", {
+      const res = await fetch(`${API_BASE}/api/ai/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: trimmed }),
