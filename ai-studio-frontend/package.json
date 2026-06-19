@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next build && next start"
+    "start": "NODE_ENV=production node .next/standalone/server.js"
   },
   "dependencies": {
     "@runwayml/sdk": "^3.21.0",
