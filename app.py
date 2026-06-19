@@ -54,6 +54,7 @@ sentry_sdk.init(
 # Explicitly configure Flask to serve files from the local "static" directory
 # so /static/uploads and /static/exports are reachable by the browser.
 app = Flask(__name__, static_folder="static", static_url_path="/static")
+app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024
 
 # Global self-healing error interceptor
 # This will catch unexpected exceptions, wake up agent.py with the traceback,
@@ -199,11 +200,11 @@ ALLOWED_ORIGINS = {
     "http://127.0.0.1:3001",
 }
 
-# Enable CORS for API routes. Allow the production frontend and local dev
-# frontend, and support cookies / credentials for session auth.
+# Enable CORS for API routes. Explicitly allow the production frontend and
+# support cookies / credentials for session auth.
 CORS(
     app,
-    resources={r"/api/*": {"origins": ["https://sailorai.app", "http://localhost:3000"]}},
+    resources={r"/api/*": {"origins": ["https://sailorai.app"]}},
     supports_credentials=True,
 )
 

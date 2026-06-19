@@ -3,18 +3,14 @@ const path = require("path");
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Produce a standalone bundle to keep the runtime lightweight and
+  // easier to deploy on platforms like Railway.
+  output: "standalone",
 
   // Next 16 uses Turbopack by default. Provide an empty Turbopack
   // config so we can continue to use a small custom webpack alias
   // without hitting the "webpack config and no turbopack" error.
   turbopack: {},
-
-  // Allow production builds to succeed even if there are ESLint warnings/errors.
-  // This does NOT affect development (npm run dev) and can be removed once
-  // all lint issues are cleaned up.
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
 
   // Ensure Webpack can resolve the same "@/*" alias that TypeScript uses
   // (configured in tsconfig.json). This makes imports like
@@ -52,4 +48,7 @@ const nextConfig = {
   },
 };
 
+// Export the full Next.js config (including standalone output,
+// webpack alias, and rewrites) so Railway and other runtimes use
+// the correct settings when running `next build` / `next start`.
 module.exports = nextConfig;

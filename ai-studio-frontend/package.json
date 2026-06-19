@@ -2,11 +2,13 @@
   "name": "ai-studio-frontend",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "^20 || ^18"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "node .next/standalone/server.js",
-    "lint": "eslint"
+    "start": "next build && next start"
   },
   "dependencies": {
     "@runwayml/sdk": "^3.21.0",
