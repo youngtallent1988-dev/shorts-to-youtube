@@ -50,5 +50,6 @@ const nextConfig = {
 
 // Export the full Next.js config (including standalone output,
 // webpack alias, and rewrites) so Railway and other runtimes use
-// the correct settings when running `next build` / `next start`.
+// the correct settings when running `next build` and then
+// `node .next/standalone/server.js` (or `node server.js`).
 module.exports = nextConfig;

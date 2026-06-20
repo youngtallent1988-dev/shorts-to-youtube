@@ -7,6 +7,11 @@ import CanvaSidebar from "../../components/CanvaSidebar";
 import { API_BASE } from "../../lib/apiBase";
 import type { AssetType, MediaAsset } from "../../lib/mediaTypes";
 
+// Reuse the same base as other API calls. In dev, API_BASE is an empty
+// string so these calls go through Next.js rewrites to the local Flask
+// backend. In production, API_BASE points at the live backend host.
+const ASSETS_BASE_URL = API_BASE || "";
+
 type ExportFormat = "mp4" | "mp3" | "wav" | "jpeg" | "png";
 
 type TransitionType = "fade" | "crossfade" | "slide" | "zoom" | "circle";
@@ -281,7 +286,7 @@ export default function EditorPage() {
 
     try {
       const res = await fetch(
-        `${API_BASE}/api/assets?type=${assetType}&includeTrash=true`,
+        `${ASSETS_BASE_URL}/api/assets?type=${assetType}&includeTrash=true`,
         {
           method: "GET",
           credentials: "include",
@@ -927,7 +932,7 @@ export default function EditorPage() {
         setLayerSelected(false);
       }
 
-      const res = await fetch(`${API_BASE}/api/assets/upload`, {
+      const res = await fetch(`${ASSETS_BASE_URL}/api/assets/upload`, {
         method: "POST",
         credentials: "include",
         body: formData,
@@ -1010,7 +1015,7 @@ export default function EditorPage() {
 
   async function handleTrashAsset(id: string) {
     try {
-      const res = await fetch(`${API_BASE}/api/assets/${id}/trash`, {
+      const res = await fetch(`${ASSETS_BASE_URL}/api/assets/${id}/trash`, {
         method: "POST",
         credentials: "include",
       });
@@ -1057,7 +1062,7 @@ export default function EditorPage() {
 
   async function handleRestoreAsset(id: string) {
     try {
-      const res = await fetch(`${API_BASE}/api/assets/${id}/restore`, {
+      const res = await fetch(`${ASSETS_BASE_URL}/api/assets/${id}/restore`, {
         method: "POST",
         credentials: "include",
       });
@@ -1077,7 +1082,7 @@ export default function EditorPage() {
 
   async function handleDeleteAsset(id: string) {
     try {
-      const res = await fetch(`${API_BASE}/api/assets/${id}`, {
+      const res = await fetch(`${ASSETS_BASE_URL}/api/assets/${id}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -2436,7 +2441,7 @@ export default function EditorPage() {
     try {
       setAssetsError(null);
       setIsExtractingAudio(true);
-      const res = await fetch(`${API_BASE}/api/extract-audio`, {
+      const res = await fetch(`${ASSETS_BASE_URL}/api/extract-audio`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -2480,7 +2485,7 @@ export default function EditorPage() {
     try {
       setAssetsError(null);
       setIsBeatSyncLoading(true);
-      const res = await fetch(`${API_BASE}/api/beat-sync`, {
+      const res = await fetch(`${ASSETS_BASE_URL}/api/beat-sync`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

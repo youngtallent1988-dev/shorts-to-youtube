@@ -40,20 +40,57 @@ function selectApiBase(): string {
   for (const value of candidates) {
     if (typeof value === "string") {
       const trimmed = value.trim();
-      if (trimmed) {
-        // Normalize to avoid trailing slashes so callers can safely
-        // do `${API_BASE}/path` without "//" issues.
-        return trimmed.replace(/\/+$/, "");
+      if (!trimmed) continue;
+
+      // Normalize to avoid trailing slashes so callers can safely
+      // do `${API_BASE}/path` without "//" issues.
+      const normalized = trimmed.replace(/\/+$/, "");
+
+      // In the browser, guard against misconfiguration where the
+      // API base is set to the frontend origin (e.g. https://sailorai.app).
+      // That would cause calls like `${API_BASE}/api/...` to hit the
+      // Next.js app itself and return HTML/404 instead of JSON.
+      if (typeof window !== "undefined") {
+        try {
+          const frontendOrigin = window.location.origin.replace(/\/+$/, "");
+          if (normalized === frontendOrigin) {
+            // Skip this candidate and keep looking; we'll fall back
+            // to DEFAULT_API_BASE (the Flask backend on Railway).
+            continue;
+          }
+        } catch {
+          // If anything goes wrong reading window.location, just
+          // treat this candidate as-is.
+        }
       }
+
+      return normalized;
     }
   }
 
-  // As a last resort, if we're running in a browser with no explicit
-  // API base configured, fall back to DEFAULT_API_BASE (your Flask
-  // backend on Railway). This avoids accidentally pointing API calls
-  // back at the frontend origin (sailorai.app), which caused 404 HTML
-  // responses on /api/assets in production.
+  // As a last resort, fall back to DEFAULT_API_BASE (your Flask
+  // backend on Railway). This avoids accidentally pointing API
+  // calls back at the frontend origin when no explicit backend
+  // URL is configured.
   return DEFAULT_API_BASE;
 }
 
-export const API_BASE = selectApiBase();
+// Central API base used across client components and route handlers.
+//
+// In development:
+//   - Browser: use relative paths ("") so `/api/*` calls go through
+//     Next.js rewrites (see next.config.js) to the local Flask backend
+//     on 127.0.0.1:5001 without any CORS issues.
+//   - Node (route handlers / server components): talk directly to the
+//     local Flask backend at http://127.0.0.1:5001.
+//
+// In production:
+//   - Both browser and Node use selectApiBase(), which prefers
+//     NEXT_PUBLIC_API_URL / NEXT_PUBLIC_API_BASE / API_BASE and
+//     falls back to DEFAULT_API_BASE (your Railway Flask host).
+const isBrowser = typeof window !== "undefined";
+const isDev = typeof process !== "undefined" && process.env.NODE_ENV !== "production";
+
+export const API_BASE = isBrowser
+  ? (isDev ? "" : selectApiBase())
+  : (isDev ? "http://127.0.0.1:5001" : selectApiBase());
