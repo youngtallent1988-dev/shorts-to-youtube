@@ -54,7 +54,11 @@ sentry_sdk.init(
 # Explicitly configure Flask to serve files from the local "static" directory
 # so /static/uploads and /static/exports are reachable by the browser.
 app = Flask(__name__, static_folder="static", static_url_path="/static")
-app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024
+# Allow up to 200 MB per request so large video uploads succeed.
+# If you need to change this without a code deploy, set MAX_CONTENT_MB
+# in the environment and restart the service.
+max_content_mb = int(os.getenv("MAX_CONTENT_MB", "200"))
+app.config["MAX_CONTENT_LENGTH"] = max_content_mb * 1024 * 1024
 
 # Global self-healing error interceptor
 # This will catch unexpected exceptions, wake up agent.py with the traceback,
@@ -114,7 +118,9 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 # Global default: 2 GB (MAX_UPLOAD_BYTES), can be overridden per type via
 # MAX_VIDEO_UPLOAD_BYTES, MAX_IMAGE_UPLOAD_BYTES, MAX_AUDIO_UPLOAD_BYTES.
 MAX_UPLOAD_BYTES = int(os.getenv("MAX_UPLOAD_BYTES", str(2 * 1024 * 1024 * 1024)))  # 2 GB
-MAX_VIDEO_UPLOAD_BYTES = int(os.getenv("MAX_VIDEO_UPLOAD_BYTES", str(MAX_UPLOAD_BYTES)))
+# Cap individual uploaded videos at 200 MB by default. You can override
+# this with MAX_VIDEO_UPLOAD_BYTES in the environment if needed.
+MAX_VIDEO_UPLOAD_BYTES = int(os.getenv("MAX_VIDEO_UPLOAD_BYTES", str(200 * 1024 * 1024)))  # 200 MB default
 MAX_IMAGE_UPLOAD_BYTES = int(os.getenv("MAX_IMAGE_UPLOAD_BYTES", str(200 * 1024 * 1024)))   # 200 MB default
 MAX_AUDIO_UPLOAD_BYTES = int(os.getenv("MAX_AUDIO_UPLOAD_BYTES", str(500 * 1024 * 1024)))  # 500 MB default
 
@@ -192,20 +198,24 @@ SESSION_TTL_DAYS = int(os.getenv("SESSION_TTL_DAYS", "30"))
 # One generation cost (simple MVP). You can later make this dynamic by duration/quality.
 GENERATION_COST_CREDITS = int(os.getenv("GENERATION_COST_CREDITS", "10"))
 
-# Allow Next.js dev server (and other local ports) to call this Flask API from the browser.
+# Allow Next.js dev server (and other local ports) to call this Flask API from the browser,
+# plus the production frontend at https://sailorai.app.
 ALLOWED_ORIGINS = {
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://localhost:3001",
     "http://127.0.0.1:3001",
+    "https://sailorai.app",
+    "https://www.sailorai.app",
 }
 
-# Enable CORS for API routes. Explicitly allow the production frontend and
-# support cookies / credentials for session auth.
+# Enable CORS for all routes (including /me, /auth/*, /api/*, etc.) and explicitly
+# allow the production frontend + local dev origins. We support cookies / credentials
+# for session auth.
 CORS(
     app,
-    resources={r"/api/*": {"origins": ["https://sailorai.app"]}},
     supports_credentials=True,
+    origins=list(ALLOWED_ORIGINS),
 )
 
 # -------------------------
@@ -398,17 +408,44 @@ def media_row_to_dict(row: sqlite3.Row) -> dict:
 
 @app.after_request
 def add_cors_headers(response):
-    """Augment CORS headers after Flask-CORS has run.
+    """Ensure all browser-facing responses have the correct CORS headers.
 
-    We let Flask-CORS manage Access-Control-Allow-Origin for /api/* routes
-    based on the explicit origins list above. Here we only ensure that
-    credentials, methods and headers are consistently allowed.
+    Flask-CORS is initialized globally above, but in production we've seen
+    cases where error responses or non-/api routes were missing the
+    Access-Control-Allow-Origin header, which causes hard CORS failures in
+    the browser ("No 'Access-Control-Allow-Origin' header").
+
+    Here we *always* add a valid CORS header when the request has an Origin
+    that we explicitly allow. This covers:
+      - /me
+      - /auth/*
+      - /api/* (including /api/assets and /api/assets/upload)
+      - Any future JSON endpoints called from https://sailorai.app
     """
-    # Do not override Access-Control-Allow-Origin set by Flask-CORS.
-    # Just make sure the other CORS headers are present.
-    response.headers.setdefault("Access-Control-Allow-Credentials", "true")
-    response.headers.setdefault("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
-    response.headers.setdefault("Access-Control-Allow-Headers", "Content-Type, Authorization")
+    origin = request.headers.get("Origin")
+
+    if origin and origin in ALLOWED_ORIGINS:
+        # Always echo back the exact Origin for credentialed requests.
+        response.headers["Access-Control-Allow-Origin"] = origin
+        # Make sure caches vary correctly by Origin.
+        vary = response.headers.get("Vary")
+        if vary:
+            if "Origin" not in vary:
+                response.headers["Vary"] = f"{vary}, Origin"
+        else:
+            response.headers["Vary"] = "Origin"
+
+        # Credentials + methods + headers for all browser calls.
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+        response.headers.setdefault(
+            "Access-Control-Allow-Methods",
+            "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+        )
+        response.headers.setdefault(
+            "Access-Control-Allow-Headers",
+            "Content-Type, Authorization, X-Requested-With",
+        )
+
     return response
 
 
@@ -2254,6 +2291,7 @@ def trash_asset(file_id: str):
 
     init_db()
 
+
     # Try to use the logged-in user; if none, fall back to a dev user for local usage.
 
     user = get_user_from_session()
@@ -2284,6 +2322,7 @@ def restore_asset(file_id: str):
         return ("", 204)
 
     init_db()
+
 
     # Try to use the logged-in user; if none, fall back to a dev user for local usage.
 
@@ -2319,6 +2358,7 @@ def delete_asset(file_id: str):
         return ("", 204)
 
     init_db()
+
 
     try:
         user = require_user()
