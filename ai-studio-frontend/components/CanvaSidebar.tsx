@@ -908,12 +908,13 @@ export default function CanvaSidebar({
           <input
             ref={fileInputRef}
             type="file"
+            multiple
             accept={inputAccept}
             onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) {
-                handleAssetUpload(file);
-                // Reset input so same file can be uploaded again
+              const files = e.target.files;
+              if (files && files.length > 0) {
+                Array.from(files).forEach((file) => handleAssetUpload(file));
+                // Reset input so the same file(s) can be uploaded again
                 if (fileInputRef.current) {
                   fileInputRef.current.value = "";
                 }
