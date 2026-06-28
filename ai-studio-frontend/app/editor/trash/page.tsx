@@ -6,8 +6,9 @@ import { TrimTimeline } from "../../../components/TrimTimeline";
 import { API_BASE } from "../../../lib/apiBase";
 
 // Match the main editor behaviour: use API_BASE so dev calls go
-// through Next.js rewrites and production calls hit the live backend.
-const ASSETS_BASE_URL = API_BASE || "";
+// through the local Next.js /api proxy, and in production call the
+// deployed Flask backend host directly.
+const ASSETS_BASE_URL = API_BASE;
 
 type AssetType = "video" | "image" | "audio";
 type ExportFormat = "mp4" | "mp3" | "wav" | "jpeg" | "png";

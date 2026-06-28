@@ -7,10 +7,11 @@ import CanvaSidebar from "../../components/CanvaSidebar";
 import { API_BASE } from "../../lib/apiBase";
 import type { AssetType, MediaAsset } from "../../lib/mediaTypes";
 
-// Reuse the same base as other API calls. In dev, API_BASE is an empty
-// string so these calls go through Next.js rewrites to the local Flask
-// backend. In production, API_BASE points at the live backend host.
-const ASSETS_BASE_URL = API_BASE || "";
+// Use API_BASE so that in development we hit the local Next.js /api proxy
+// (rewriting to Flask on 127.0.0.1:5001), and in production we call the
+// deployed Flask backend host directly. The backend has CORS configured
+// to allow https://sailorai.app, so cross-origin calls are safe.
+const ASSETS_BASE_URL = API_BASE;
 
 type ExportFormat = "mp4" | "mp3" | "wav" | "jpeg" | "png";
 
