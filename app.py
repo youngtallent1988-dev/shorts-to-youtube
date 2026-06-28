@@ -2291,8 +2291,8 @@ def trash_asset(file_id: str):
 
     init_db()
 
-
     # Try to use the logged-in user; if none, fall back to a dev user for local usage.
+
 
     user = get_user_from_session()
     if not user:
@@ -2323,8 +2323,8 @@ def restore_asset(file_id: str):
 
     init_db()
 
-
     # Try to use the logged-in user; if none, fall back to a dev user for local usage.
+
 
     user = get_user_from_session()
     if not user:
@@ -2358,6 +2358,7 @@ def delete_asset(file_id: str):
         return ("", 204)
 
     init_db()
+
 
 
     try:
@@ -2507,6 +2508,9 @@ def format_convert():
     return "Video to MP4 conversion route"
 
 
+# Ensure DB schema is initialized when the module is imported (e.g. under gunicorn)
+init_db()
+
 if __name__ == "__main__":
     # Local/dev entrypoint. Railway and other production environments should
     # run this app via gunicorn (e.g. `gunicorn app:app`) and will inject the
@@ -2515,6 +2519,5 @@ if __name__ == "__main__":
     # For local development we default to port 5001 so that the Next.js
     # dev proxy in ai-studio-frontend/next.config.js can route /api/*
     # traffic to this Flask app (Option A).
-    init_db()
     port = int(os.environ.get("PORT", 5001))
     app.run(host="0.0.0.0", port=port, debug=True)
